@@ -1,10 +1,10 @@
-#Lambda language (Proto)
+# Lambda language (Proto)
 
 Lambda is imperative interpreted programming C++ like language.
 Extension of the Lambda programing language id `.mini`.
 
 
-##Features
+## Features
 
 - variables
 - operations on base types
@@ -17,7 +17,7 @@ Extension of the Lambda programing language id `.mini`.
 - standard library
 
 
-##Project Structure
+## Project Structure
 
 `examples` - folder with program examples
 
@@ -29,16 +29,16 @@ Extension of the Lambda programing language id `.mini`.
 
 `Mini.cf` - normal syntax
 
-##Types
+## Types
 - int
 - bool
 - string
 - void
 
-##How To Build
+## How To Build
 Make sure you installed java, Jlex, CUP and BNFC (you can follow tutorial https://bnfc.digitalgrammars.com/tutorial/bnfc-tutorial.html).
 
-###Building the interpreter
+### Building the interpreter
 You probably want to clean up previous build files first:
 ```
 make clean
@@ -59,7 +59,7 @@ Compile `runmini.java`
 javac -Xlint runmini.java 
 ```
 
-##How To Use
+## How To Use
 The interpreter reads standard input and files, parses a series of expressions separated by a semicolon (;), typechecks and evaluates each expression and prints out the results.
 
 ```bash
@@ -73,7 +73,7 @@ java runmini ./examples/example.mini
 13
 ```
 
-##Valid Program
+## Valid Program
 
 ```
 int x ;
@@ -88,7 +88,7 @@ Output:
 13
 ```
 
-##Invalid program
+## Invalid program
 
 ```
 int i ;
