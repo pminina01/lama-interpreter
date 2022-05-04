@@ -8,7 +8,7 @@ Extension of the Lambda programing language id `.mini`.
 
 - variables
 - operations on base types
-- homogeneous lists
+- lists
 - user-defined terms and types (user-defined types are structured algebraic data types)
 - auto types
 - first-class functions, functions with multiple arguments
