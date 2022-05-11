@@ -5,7 +5,7 @@ _The full documentation is in Notion: https://www.notion.so/Lambda-Programming-L
 Lambda is imperative interpreted programming C++ like language.
 Extension of the Lambda programming language id `.mini`.
 
-A Lambda program is a sequence of definitions. It may also contain comments and preprocessor directives. It must have a function `main` of type `int` that takes no arguments. It may or may not have a `return` statement.
+A Lambda program is a sequence of definitions. It may also contain comments and preprocessor directives. It may have a function `main` of type `int` that takes no arguments. It may or may not have a `return` statement.
 
 ```cpp
     int main () {
