@@ -5,7 +5,7 @@ public class runmini {
 
     public static void main(String args[]) {
 		if (args.length != 1) {
-			// If there if no filename passed by user
+			// If there is no filename passed by user
 			System.err.println("Usage: runmini <SourceFile>");
 			System.exit(1);	
 		}
@@ -18,17 +18,21 @@ public class runmini {
 			new TypeChecker().typecheck(parse_tree); // Type check
 			new Interpreter().interpret(parse_tree); // Interpret
 		} catch (TypeException e) {
+			// Type error
 			System.out.println("TYPE ERROR");
 			System.err.println(e.toString());
 			System.exit(1);
 		} catch (RuntimeException e) {
+			// Runtime error
 			System.out.println("RUNTIME ERROR");
 			System.err.println(e.toString());
 			System.exit(1);
 		} catch (java.io.IOException e) {
+			// IO error
 			System.err.println(e.toString());
 			System.exit(1);
 		} catch (Throwable e) {
+			// Syntax error
 			System.out.println("SYNTAX ERROR");
 			System.out.println("At line " + String.valueOf(l.line_num()) 
 					+ ", near \"" + l.buff() + "\" :");

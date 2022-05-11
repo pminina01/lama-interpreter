@@ -5,139 +5,234 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Interpreter {
+	// Class for interpreting the program
 
     public void interpret(Program p) {
-	Prog prog = (Prog)p;
-	Env env = new Env();
-	for (Stm s : prog.liststm_) {
-	    execStm(s, env);
-	}
+		// Create empty environment of a program and execute statements
+		Prog prog = (Prog)p;
+		Env env = new Env();
+		for (Stm s : prog.liststm_) {
+			execStm(s, env);
+		}
     }
 
     private static abstract class Value {
-	public boolean isInt() { return false; }
-	public Integer getInt() { 
-	    throw new RuntimeException(this + " is not an integer."); 
-	}
-	public Double getDouble() { 
-	    throw new RuntimeException(this + " is not a double."); 
-	}
+		// Class for storing information about the value
 
-	public static class Undefined extends Value {
-	    public Undefined() {}
-	    public String toString() { return "undefined"; }
-	}
-	public static class IntValue extends Value {
-	    private Integer i;
-	    public IntValue(Integer i) { this.i = i; }
-	    public boolean isInt() { return true; }
-	    public Integer getInt() { return i; }
-	    public String toString() { return i.toString(); }
-	}
-	public static class DoubleValue extends Value {
-	    private Double d;
-	    public DoubleValue(Double d) { this.d = d; }
-	    public Double getDouble() { return d; }
-	    public String toString() { return d.toString(); }
-	}
+		public boolean isInt() { 
+			// Return boolean if value is integer
+			// Default is false, because it is "value"
+			return false; 
+		}
+
+		public Integer getInt() { 
+			// Throw an exception as "value" is not "integer"
+			throw new RuntimeException(this + " is not an integer."); 
+		}
+
+		public Double getDouble() { 
+			// Throw an exception as "value" is not "double"
+			throw new RuntimeException(this + " is not a double."); 
+		}
+
+		public static class Undefined extends Value {
+			// Class for storing undefined value
+			// Undefined value is a value with only name of identifier
+
+			public Undefined() {
+				// Constructor 
+			}
+
+			public String toString() { 
+				// For printing
+				return "undefined"; 
+			}
+		}
+
+		public static class IntValue extends Value {
+			// Class for storing integer value
+
+			private Integer i;
+
+			public IntValue(Integer i) { 
+				// Constructor
+				this.i = i; 
+			}
+
+			public boolean isInt() { 
+				// Return boolean if value is integer
+				// As this is integer class, then isInt() is true
+				return true; 
+			}
+
+			public Integer getInt() {
+				// Return int value itself 
+				return i; 
+			}
+
+			public String toString() { 
+				// For printing
+				return i.toString(); 
+			}
+		}
+
+		public static class DoubleValue extends Value {
+			// Class for storing double value
+
+			private Double d;
+
+			public DoubleValue(Double d) { 
+				// Constructor
+				this.d = d; 
+			}
+
+			public Double getDouble() { 
+				// Return double value itself
+				return d; 
+			}
+
+			public String toString() { 
+				// For printing
+				return d.toString(); 
+			}
+		}
     }
 
     private static class Env { 
-	private LinkedList<HashMap<String,Value>> scopes;
+		// Class for storing environment variable of program
 
-	public Env() {
-	    scopes = new LinkedList<HashMap<String,Value>>();
-	    enterScope();
-	}
+		private LinkedList<HashMap<String,Value>> scopes;
 
-	public Value lookupVar(String x) {
-	    for (HashMap<String,Value> scope : scopes) {
-		Value v = scope.get(x);
-		if (v != null)
-		    return v;
-	    }
-	    throw new RuntimeException("Unknown variable " + x + " in " + scopes);
-	}
-
-	public void addVar(String x) {
-	    scopes.getFirst().put(x,new Value.Undefined());
-	}
-
-	public void setVar(String x, Value v) {
-	    for (HashMap<String,Value> scope : scopes) {
-		if (scope.containsKey(x)) {
-		    scope.put(x,v);
-		    return;
+		public Env() {
+			// Environment for storing context of scopes in linked list.
+			// Structure: [{'ident':'value','s2':'c2',...},{'s3':'c3',...},...]
+			scopes = new LinkedList<HashMap<String,Value>>();
+			enterScope();
 		}
-	    }
-	}
 
-	public void enterScope() {
-	    scopes.addFirst(new HashMap<String,Value>());
-	}
+		public Value lookupVar(String x) {
+			// Looking up inside whole environment for an identifier
+			// If identifier is found then return Value object
+			// Otherwise throw an exception
+			for (HashMap<String,Value> scope : scopes) {
+				Value v = scope.get(x);
+				if (v != null)
+					return v;
+			}
+			throw new RuntimeException("Unknown variable " + x + " in " + scopes);
+		}
 
-	public void leaveScope() {
-	    scopes.removeFirst();
-	}
+		public void addVar(String x) {
+			// Add variable to the environment scope
+			// Form is: (variable_name, undefined_value_object)
+			scopes.getFirst().put(x,new Value.Undefined());
+		}
+
+		public void setVar(String x, Value v) {
+			// Find variable in the environment and set to new value
+			for (HashMap<String,Value> scope : scopes) {
+				if (scope.containsKey(x)) {
+					scope.put(x,v);
+					return;
+				}
+			}
+		}
+
+		public void enterScope() {
+			// Adds empty hash map of scope at the begining of list
+			scopes.addFirst(new HashMap<String,Value>());
+		}
+
+		public void leaveScope() {
+			// Remove context of scope == exiting the scope
+			scopes.removeFirst();
+		}
     }
 
     private void execStm(Stm st, Env env) {
-	st.accept(new StmExecuter(), env);
+		// Execute statement using StmExecuter class
+		// 'accept' is method for using a visitor and returning a value
+		st.accept(new StmExecuter(), env);
     }
 
     private class StmExecuter implements Stm.Visitor<Object,Env> {
-	public Object visit(mini.Absyn.SDecl p, Env env) {
-	    env.addVar(p.ident_);
-	    return null;
-	}
+		// Class for visiting the corresponding statement and execute it
 
-	public Object visit(mini.Absyn.SAss p, Env env) {
-	    env.setVar(p.ident_, evalExp(p.exp_, env));
-	    return null;
-	}
+		public Object visit(mini.Absyn.SDecl p, Env env) {
+			// Declaration: int i;
+			// Add variable to the scope as undentified
+			env.addVar(p.ident_);
+			return null;
+		}
 
-	public Object visit(mini.Absyn.SBlock p, Env env) {
-	    env.enterScope();
-	    for (Stm st : p.liststm_) {
-		execStm(st, env);
-	    }
-	    env.leaveScope();
-	    return null;
-	}
+		public Object visit(mini.Absyn.SAss p, Env env) {
+			// Assignment: i = 9 + j;
+			// Evaluate right hand side expression
+			// Then set left hand side variable to this result
+			env.setVar(p.ident_, evalExp(p.exp_, env));
+			return null;
+		}
 
-	public Object visit(mini.Absyn.SPrint p, Env env) {
-	    Value v = evalExp(p.exp_, env);
-	    System.err.println(v.toString());
-	    return null;
-	}
+		public Object visit(mini.Absyn.SBlock p, Env env) {
+			// Block: {...}
+			// Enter the scope (add scope to environment), execute all statements inside
+			// then leave the scope (delete scope from the environment)
+			env.enterScope();
+			for (Stm st : p.liststm_) {
+				execStm(st, env);
+			}
+			env.leaveScope();
+			return null;
+		}
+
+		public Object visit(mini.Absyn.SPrint p, Env env) {
+			// Print: print 9;
+			// Evaluate expression after print and print it to console
+			Value v = evalExp(p.exp_, env);
+			System.err.println(v.toString());
+			return null;
+		}
     }
 
     private Value evalExp(Exp e, Env env) {
-	return e.accept(new ExpEvaluator(), env);
+		// Evaluate expression using ExpEvaluator class
+		// 'accept' is method for using a visitor and returning a value
+		return e.accept(new ExpEvaluator(), env);
     }
 
     private class ExpEvaluator implements Exp.Visitor<Value,Env> {
+		// Class for evaluating expression
 
-	public Value visit(mini.Absyn.EVar p, Env env) {
-	    return env.lookupVar(p.ident_);
-	}
+		public Value visit(mini.Absyn.EVar p, Env env) {
+			// Variable (identifier): i
+			// Search for ident in environment and return Value object with info
+			return env.lookupVar(p.ident_);
+		}
 
-	public Value visit(mini.Absyn.EInt p, Env env) {
-	    return new Value.IntValue(p.integer_);
-	}
-	public Value visit(mini.Absyn.EDouble p, Env env) {
-	    return new Value.DoubleValue(p.double_);
-	}
-	public Value visit(mini.Absyn.EAdd p, Env env) {
-	    Value v1 = p.exp_1.accept(this, env);
-	    Value v2 = p.exp_2.accept(this, env);
-	    if (v1.isInt()) {
-		return new Value.IntValue(v1.getInt() + v2.getInt());
-	    } else {
-		return new Value.DoubleValue(v1.getDouble() + v2.getDouble());
-	    }
-	}
+		public Value visit(mini.Absyn.EInt p, Env env) {
+			// Integer: int i
+			// Return IntValue object
+			return new Value.IntValue(p.integer_);
+		}
 
+		public Value visit(mini.Absyn.EDouble p, Env env) {
+			// Double: double i
+			// Return DoubleValue object
+			return new Value.DoubleValue(p.double_);
+		}
+
+		public Value visit(mini.Absyn.EAdd p, Env env) {
+			// Addition: i + 3 
+			// Check if type of first variables is int 
+			// => return new IntValue object as result of addition
+			// Otherwise return new DoubleValue object as result of addition
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.IntValue(v1.getInt() + v2.getInt());
+			} else {
+				return new Value.DoubleValue(v1.getDouble() + v2.getDouble());
+			}
+		}
     }
-
 }
