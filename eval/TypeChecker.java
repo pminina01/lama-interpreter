@@ -1,6 +1,6 @@
 package eval;
-import lama.Absyn.*;
-import lama.PrettyPrinter;
+import mini.Absyn.*;
+import mini.PrettyPrinter;
 
 import java.util.HashMap;
 import java.util.LinkedList;

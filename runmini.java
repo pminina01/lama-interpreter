@@ -1,20 +1,20 @@
 import eval.*;
 
-public class runlama {
+public class runmini {
 	// Entry point class for runing interpreter and type checker
 
     public static void main(String args[]) {
 		if (args.length != 1) {
 			// If there is no filename passed by user
-			System.err.println("Usage: runlama <SourceFile>");
+			System.err.println("Usage: runmini <SourceFile>");
 			System.exit(1);	
 		}
 
-		lama.Yylex l = null;
+		mini.Yylex l = null;
 		try {
-			l = new lama.Yylex(new java.io.FileReader(args[0])); // Lexer
-			lama.parser p = new lama.parser(l); // Parser
-			lama.Absyn.Program parse_tree = p.pProgram(); // Parse tree
+			l = new mini.Yylex(new java.io.FileReader(args[0])); // Lexer
+			mini.parser p = new mini.parser(l); // Parser
+			mini.Absyn.Program parse_tree = p.pProgram(); // Parse tree
 			new TypeChecker().typecheck(parse_tree); // Type check
 			new Interpreter().interpret(parse_tree); // Interpret
 		} catch (TypeException e) {
