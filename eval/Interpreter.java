@@ -1,5 +1,5 @@
 package eval;
-import mini.Absyn.*;
+import lama.Absyn.*;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -158,14 +158,14 @@ public class Interpreter {
     private class StmExecuter implements Stm.Visitor<Object,Env> {
 		// Class for visiting the corresponding statement and execute it
 
-		public Object visit(mini.Absyn.SDecl p, Env env) {
+		public Object visit(lama.Absyn.SDecl p, Env env) {
 			// Declaration: int i;
 			// Add variable to the scope as undentified
 			env.addVar(p.ident_);
 			return null;
 		}
 
-		public Object visit(mini.Absyn.SAss p, Env env) {
+		public Object visit(lama.Absyn.SAss p, Env env) {
 			// Assignment: i = 9 + j;
 			// Evaluate right hand side expression
 			// Then set left hand side variable to this result
@@ -173,7 +173,7 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(mini.Absyn.SBlock p, Env env) {
+		public Object visit(lama.Absyn.SBlock p, Env env) {
 			// Block: {...}
 			// Enter the scope (add scope to environment), execute all statements inside
 			// then leave the scope (delete scope from the environment)
@@ -185,7 +185,7 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(mini.Absyn.SPrint p, Env env) {
+		public Object visit(lama.Absyn.SPrint p, Env env) {
 			// Print: print 9;
 			// Evaluate expression after print and print it to console
 			Value v = evalExp(p.exp_, env);
@@ -203,25 +203,25 @@ public class Interpreter {
     private class ExpEvaluator implements Exp.Visitor<Value,Env> {
 		// Class for evaluating expression
 
-		public Value visit(mini.Absyn.EVar p, Env env) {
+		public Value visit(lama.Absyn.EVar p, Env env) {
 			// Variable (identifier): i
 			// Search for ident in environment and return Value object with info
 			return env.lookupVar(p.ident_);
 		}
 
-		public Value visit(mini.Absyn.EInt p, Env env) {
+		public Value visit(lama.Absyn.EInt p, Env env) {
 			// Integer: int i
 			// Return IntValue object
 			return new Value.IntValue(p.integer_);
 		}
 
-		public Value visit(mini.Absyn.EDouble p, Env env) {
+		public Value visit(lama.Absyn.EDouble p, Env env) {
 			// Double: double i
 			// Return DoubleValue object
 			return new Value.DoubleValue(p.double_);
 		}
 
-		public Value visit(mini.Absyn.EAdd p, Env env) {
+		public Value visit(lama.Absyn.EAdd p, Env env) {
 			// Addition: i + 3 
 			// Check if type of first variables is int 
 			// => return new IntValue object as result of addition

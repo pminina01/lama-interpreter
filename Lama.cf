@@ -1,4 +1,4 @@
--- Mini.cf
+-- Lama.cf
 
 Prog. Program ::= [Stm] ;
 
