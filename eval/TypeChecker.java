@@ -1,12 +1,12 @@
 package eval;
-import mini.Absyn.*;
-import mini.PrettyPrinter;
+import lama.Absyn.*;
+import lama.PrettyPrinter;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class TypeChecker {
-	// Class foe checking the type correcness of program
+	// Class for checking the type correctness of a program
 
     private static enum TypeCode { 
 		// Store type codes
@@ -38,7 +38,7 @@ public class TypeChecker {
 		}
 
 		public void addVar(String x, TypeCode t) {
-			// Add variable to the environment scope if it is not exists yet
+			// Add variable to the environment scope if it is not exist yet
 			// Otherwise throw a type exception
 			if (scopes.getFirst().containsKey(x))
 				throw new TypeException("Variable " + x 
@@ -52,7 +52,7 @@ public class TypeChecker {
 		}
 
 		public void leaveScope() {
-			// Remove context of scope == exiting the scope
+			// Remove context of scope from evironment == exiting the scope
 			scopes.removeFirst();
 		}
     }
@@ -114,7 +114,7 @@ public class TypeChecker {
 
     private void checkExp(Exp e, TypeCode t, Env env) {
 		// Check correctness of an expression type 
-		// and compating it to the expected type t
+		// and comparing it to the expected type t
 		TypeCode et = inferExp(e,env);
 		if (et != t) {
 			throw new TypeException(PrettyPrinter.print(e) 
@@ -132,7 +132,7 @@ public class TypeChecker {
 		// Class for infering the type of and expression and check its correctness
 
 		public TypeCode visit(EVar p, Env env) {
-			// Variable: i
+			// Variable (identifier): i
 			// Find type of variable in the environment
 			return env.lookupVar(p.ident_);
 		}
@@ -147,7 +147,7 @@ public class TypeChecker {
 		}
 		public TypeCode visit(EAdd p, Env env) {
 			// Addition: i + 3 
-			// Check if type of both variables if the same
+			// Check if type of both variables is the same
 			// If true then return type of first variable
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
@@ -155,7 +155,7 @@ public class TypeChecker {
 			if (t1 != t2) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							" has type " + t1
-							+ " but " + PrettyPrinter.print(p.exp_1)
+							+ " but " + PrettyPrinter.print(p.exp_2)
 							+ " has type " + t2);
 			}
 			return t1;
