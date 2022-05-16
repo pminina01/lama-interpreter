@@ -35,6 +35,11 @@ public class Interpreter {
 			throw new RuntimeException(this + " is not a double."); 
 		}
 
+		public Boolean getBool() { 
+			// Throw an exception as "value" is not "bool"
+			throw new RuntimeException(this + " is not a bool."); 
+		}
+
 		public static class Undefined extends Value {
 			// Class for storing undefined value
 			// Undefined value is a value with only name of identifier
@@ -94,6 +99,33 @@ public class Interpreter {
 			public String toString() { 
 				// For printing
 				return d.toString(); 
+			}
+		}
+
+		public static class BoolValue extends Value {
+			// Class for storing bool value
+
+			private Boolean b;
+
+			public BoolValue(Bool b) { 
+				// Constructor
+				if (b instanceof lama.Absyn.Bool_false) {
+					this.b = false;
+				} else {
+					this.b = true;
+				}
+				
+				 
+			}
+
+			public Boolean getBool() { 
+				// Return bool value itself
+				return b; 
+			}
+
+			public String toString() { 
+				// For printing
+				return b.toString(); 
 			}
 		}
     }
@@ -173,6 +205,16 @@ public class Interpreter {
 			return null;
 		}
 
+		public Object visit(lama.Absyn.SInit p, Env env) {
+			// Initialisation: int i = 9 + j;
+			// Add variable to the scope
+			// Evaluate right hand side expression
+			// Then set left hand side variable to this result
+			env.addVar(p.ident_);
+			env.setVar(p.ident_, evalExp(p.exp_, env));
+			return null;
+		}
+
 		public Object visit(lama.Absyn.SBlock p, Env env) {
 			// Block: {...}
 			// Enter the scope (add scope to environment), execute all statements inside
@@ -216,9 +258,15 @@ public class Interpreter {
 		}
 
 		public Value visit(lama.Absyn.EDouble p, Env env) {
-			// Double: double i
+			// Double: double d
 			// Return DoubleValue object
 			return new Value.DoubleValue(p.double_);
+		}
+
+		public Value visit(lama.Absyn.EBool p, Env env) {
+			// Bool: bool b
+			// Return BoolValue object
+			return new Value.BoolValue(p.bool_);
 		}
 
 		public Value visit(lama.Absyn.EAdd p, Env env) {

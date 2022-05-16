@@ -1,0 +1,5 @@
+bool a = true ;
+bool b ;
+b = false ;
+print a ;
+print b ;

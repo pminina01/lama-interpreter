@@ -11,7 +11,8 @@ public class TypeChecker {
     private static enum TypeCode { 
 		// Store type codes
         INT    { public String toString() { return "int";    } }, 
-        DOUBLE { public String toString() { return "double"; } }
+        DOUBLE { public String toString() { return "double"; } },
+		BOOL   { public String toString() { return "bool"; } }
     }
 
     private static class Env { 
@@ -92,6 +93,16 @@ public class TypeChecker {
 			return null;
 		}
 
+		public Object visit(SInit p, Env env) {
+			// Initialisation: int i = 9 + j;
+			// Add variable to the scope
+			// Then check right hand side expression
+			TypeCode t = typeCode(p.type_);
+			env.addVar(p.ident_, t);
+			checkExp(p.exp_, t, env);
+			return null;
+		}
+
 		public Object visit(SBlock p, Env env) {
 			// Block: {...}
 			// Enter the scope (add scope to environment), check all statements inside
@@ -142,8 +153,12 @@ public class TypeChecker {
 			return TypeCode.INT;
 		}
 		public TypeCode visit(EDouble p, Env env) {
-			// Double: double i
+			// Double: double d
 			return TypeCode.DOUBLE;
+		}
+		public TypeCode visit(EBool p, Env env) {
+			// Bool: bool b
+			return TypeCode.BOOL;
 		}
 		public TypeCode visit(EAdd p, Env env) {
 			// Addition: i + 3 
@@ -157,6 +172,12 @@ public class TypeChecker {
 							" has type " + t1
 							+ " but " + PrettyPrinter.print(p.exp_2)
 							+ " has type " + t2);
+			}
+			if (t1 == TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							"addition operation written in " 
+							+ p + 
+							" does not support bool parameters");
 			}
 			return t1;
 		}
@@ -179,6 +200,11 @@ public class TypeChecker {
 		public TypeCode visit(TDouble t, Object arg) {
 			// Double
 			return TypeCode.DOUBLE;
+		}
+
+		public TypeCode visit(TBool t, Object arg) {
+			// Bool
+			return TypeCode.BOOL;
 		}
     }
 

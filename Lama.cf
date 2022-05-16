@@ -4,17 +4,22 @@ Prog. Program ::= [Stm] ;
 
 terminator Stm "" ;
 
-SDecl.  Stm ::= Type Ident ";"  ;
-SAss.   Stm ::= Ident "=" Exp ";" ;
-SBlock. Stm ::= "{" [Stm] "}" ;
-SPrint. Stm ::= "print" Exp  ";" ;
+SDecl.   Stm ::= Type Ident ";"  ;
+SAss.    Stm ::= Ident "=" Exp ";" ;
+SInit.   Stm ::= Type Ident "=" Exp ";" ;
+SBlock.  Stm ::= "{" [Stm] "}" ;
+SPrint.  Stm ::= "print" Exp  ";" ;
 
 EVar.    Exp1 ::= Ident ;
 EInt.    Exp1 ::= Integer ;
 EDouble. Exp1 ::= Double ;
+EBool.   Exp1 ::= Bool ;
 EAdd.    Exp  ::= Exp "+" Exp1 ;
+
+rules Bool ::= "true" | "false";
 
 coercions Exp 1 ;
 
 TInt.    Type ::= "int" ;
 TDouble. Type ::= "double" ;
+TBool.   Type ::= "bool" ;
