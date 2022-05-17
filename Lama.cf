@@ -15,6 +15,7 @@ EInt.    Exp1 ::= Integer ;
 EDouble. Exp1 ::= Double ;
 EBool.   Exp1 ::= Bool ;
 EAdd.    Exp  ::= Exp "+" Exp1 ;
+ESub.    Exp  ::= Exp "-" Exp1 ;
 
 rules Bool ::= "true" | "false";
 
