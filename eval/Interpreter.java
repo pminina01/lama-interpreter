@@ -75,6 +75,12 @@ public class Interpreter {
 				return i; 
 			}
 
+			public Double getDouble() {
+				// Return double value itself
+				double d = i; 
+				return d; 
+			}
+
 			public String toString() { 
 				// For printing
 				return i.toString(); 
@@ -299,16 +305,23 @@ public class Interpreter {
 
 		public Value visit(lama.Absyn.EMul p, Env env) {
 			// Multiplication: i * 3 
-			// Check if type of first variables is int 
-			// => return new IntValue object as result of multiplication
+			// return new IntValue object if both multipliers are of type int
 			// Otherwise return new DoubleValue object as result of multiplication
 			Value v1 = p.exp_1.accept(this, env);
 			Value v2 = p.exp_2.accept(this, env);
-			if (v1.isInt()) {
+			if (v1.isInt() && v2.isInt()) {
 				return new Value.IntValue(v1.getInt() * v2.getInt());
 			} else {
 				return new Value.DoubleValue(v1.getDouble() * v2.getDouble());
 			}
+		}
+
+		public Value visit(lama.Absyn.EDiv p, Env env) {
+			// Division: i * 3 
+			// return new DoubleValue object as result of division
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			return new Value.DoubleValue(v1.getDouble() / v2.getDouble());
 		}
     }
 }

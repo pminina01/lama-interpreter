@@ -1,0 +1,14 @@
+double x ;
+x = 19.0 ;
+double y ;
+y = x / 2 ;
+print y ;
+{
+  int y ;
+  y = 15 ;
+  print y ;
+  x = y / 2;
+  print x ;
+}
+print x ;
+print y;

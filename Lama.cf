@@ -15,6 +15,7 @@ EInt.    Exp3 ::= Integer ;
 EDouble. Exp3 ::= Double ;
 EBool.   Exp3 ::= Bool ;
 EMul.    Exp2  ::= Exp2 "*" Exp3 ;
+EDiv.    Exp2  ::= Exp2 "/" Exp3 ;
 EAdd.    Exp1  ::= Exp1 "+" Exp2 ;
 ESub.    Exp1  ::= Exp1 "-" Exp2 ;
 
