@@ -202,6 +202,27 @@ public class TypeChecker {
 			}
 			return t1;
 		}
+		public TypeCode visit(EMul p, Env env) {
+			// Multiplication: i * 3 
+			// Check if type of both variables is the same
+			// If true then return type of first variable
+			// Otherwise throw an exception
+			TypeCode t1 = p.exp_1.accept(this, env);
+			TypeCode t2 = p.exp_2.accept(this, env);
+			if (t1 != t2) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							" has type " + t1
+							+ " but " + PrettyPrinter.print(p.exp_2)
+							+ " has type " + t2);
+			}
+			if (t1 == TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							"multiplication operation written in " 
+							+ p + 
+							" does not support bool parameters");
+			}
+			return t1;
+		}
 
     }
 

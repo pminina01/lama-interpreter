@@ -296,5 +296,19 @@ public class Interpreter {
 				return new Value.DoubleValue(v1.getDouble() - v2.getDouble());
 			}
 		}
+
+		public Value visit(lama.Absyn.EMul p, Env env) {
+			// Multiplication: i * 3 
+			// Check if type of first variables is int 
+			// => return new IntValue object as result of multiplication
+			// Otherwise return new DoubleValue object as result of multiplication
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.IntValue(v1.getInt() * v2.getInt());
+			} else {
+				return new Value.DoubleValue(v1.getDouble() * v2.getDouble());
+			}
+		}
     }
 }
