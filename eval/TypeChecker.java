@@ -305,6 +305,47 @@ public class TypeChecker {
 			}
 			return TypeCode.INT;
 		}
+		public TypeCode visit(ELess p, Env env) {
+			// Less Than: i < 3 
+			// Check if type of both variables is the same (the numeric one)
+			// If true then return BOOL type
+			TypeCode t1 = p.exp_1.accept(this, env);
+			TypeCode t2 = p.exp_2.accept(this, env);
+			if (t1 != t2) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							" has type " + t1
+							+ " but " + PrettyPrinter.print(p.exp_2)
+							+ " has type " + t2);
+			}
+			if (t1 == TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							"subtraction operation written in " 
+							+ p + 
+							" does not support bool parameters");
+			}
+			return TypeCode.BOOL;
+		}
+		public TypeCode visit(EGreater p, Env env) {
+			// Greater Than: i > 3 
+			// Check if type of both variables is the same (the numeric one)
+			// If true then return type of first variable
+			// Otherwise throw an exception
+			TypeCode t1 = p.exp_1.accept(this, env);
+			TypeCode t2 = p.exp_2.accept(this, env);
+			if (t1 != t2) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							" has type " + t1
+							+ " but " + PrettyPrinter.print(p.exp_2)
+							+ " has type " + t2);
+			}
+			if (t1 == TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							"subtraction operation written in " 
+							+ p + 
+							" does not support bool parameters");
+			}
+			return TypeCode.BOOL;
+		}
 
     }
 

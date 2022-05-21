@@ -119,9 +119,11 @@ public class Interpreter {
 					this.b = false;
 				} else {
 					this.b = true;
-				}
-				
-				 
+				}			 
+			}
+			public BoolValue(Boolean b) { 
+				// Constructor
+				this.b = b;			 
 			}
 
 			public Boolean getBool() { 
@@ -362,6 +364,34 @@ public class Interpreter {
 			Value v = new Value.IntValue(tmp.getInt() - 1);
 			env.setVar(p.ident_, v);
 			return v;
+		}
+
+		public Value visit(lama.Absyn.ELess p, Env env) {
+			// Less Than: i < 3 
+			// Compare two values and return the answer
+			// => return new IntValue object as result of addition
+			// Otherwise return new DoubleValue object as result of addition
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.BoolValue(v1.getInt() < v2.getInt());
+			} else {
+				return new Value.BoolValue(v1.getDouble() < v2.getDouble());
+			}
+		}
+
+		public Value visit(lama.Absyn.EGreater p, Env env) {
+			// Less Than: i < 3 
+			// Compare two values and return the answer
+			// => return new IntValue object as result of addition
+			// Otherwise return new DoubleValue object as result of addition
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.BoolValue(v1.getInt() > v2.getInt());
+			} else {
+				return new Value.BoolValue(v1.getDouble() > v2.getDouble());
+			}
 		}
     }
 }

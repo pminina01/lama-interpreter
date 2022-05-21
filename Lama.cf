@@ -10,22 +10,24 @@ SInit.   Stm ::= Type Ident "=" Exp ";" ;
 SBlock.  Stm ::= "{" [Stm] "}" ;
 SPrint.  Stm ::= "print" Exp  ";" ;
 
-EVar.    Exp5 ::= Ident ;
-EInt.    Exp5 ::= Integer ;
-EDouble. Exp5 ::= Double ;
-EBool.   Exp5 ::= Bool ;
-EPostIncr.  Exp4  ::= Ident "++" ;
-EPostDecr.  Exp4  ::= Ident "--" ;
-EPreIncr.   Exp3  ::= "++" Ident ;
-EPreDecr.   Exp3  ::= "--" Ident ;
-EMul.       Exp2  ::= Exp2 "*" Exp3 ;
-EDiv.       Exp2  ::= Exp2 "/" Exp3 ;
-EAdd.       Exp1  ::= Exp1 "+" Exp2 ;
-ESub.       Exp1  ::= Exp1 "-" Exp2 ;
+EVar.    Exp7 ::= Ident ;
+EInt.    Exp7 ::= Integer ;
+EDouble. Exp7 ::= Double ;
+EBool.   Exp7 ::= Bool ;
+EPostIncr.  Exp6  ::= Ident "++" ;
+EPostDecr.  Exp6  ::= Ident "--" ;
+EPreIncr.   Exp5  ::= "++" Ident ;
+EPreDecr.   Exp5  ::= "--" Ident ;
+EMul.       Exp4  ::= Exp4 "*" Exp5 ;
+EDiv.       Exp4  ::= Exp4 "/" Exp5 ;
+EAdd.       Exp3  ::= Exp3 "+" Exp4 ;
+ESub.       Exp3  ::= Exp3 "-" Exp4 ;
+ELess.      Exp1  ::= Exp2 "<"  Exp2 ;
+EGreater.   Exp1  ::= Exp2 ">"  Exp2 ;
 
 rules Bool ::= "true" | "false";
 
-coercions Exp 5 ;
+coercions Exp 7 ;
 
 TInt.    Type ::= "int" ;
 TDouble. Type ::= "double" ;

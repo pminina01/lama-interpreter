@@ -1,0 +1,5 @@
+int a = 5 ;
+int b = 6 ;
+bool z = a > b ;
+print z ;
+print (b > a) ;
