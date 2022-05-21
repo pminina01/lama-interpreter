@@ -76,7 +76,7 @@ public class Interpreter {
 			}
 
 			public Double getDouble() {
-				// Return double value itself
+				// Return double value (cast int value to double)
 				double d = i; 
 				return d; 
 			}
@@ -322,6 +322,46 @@ public class Interpreter {
 			Value v1 = p.exp_1.accept(this, env);
 			Value v2 = p.exp_2.accept(this, env);
 			return new Value.DoubleValue(v1.getDouble() / v2.getDouble());
+		}
+
+		public Value visit(lama.Absyn.EPostIncr p, Env env) {
+			// Post Increment: i ++  
+			// Return the unchanged value of the variable
+			// Then set the incremented value to the variable
+			Value tmp = env.lookupVar(p.ident_);
+			Value v = new Value.IntValue(tmp.getInt() + 1);
+			env.setVar(p.ident_, v);
+			return tmp;
+		}
+
+		public Value visit(lama.Absyn.EPostDecr p, Env env) {
+			// Post Decrement: i -- 
+			// Return the unchanged value of the variable
+			// Then set the decremented value to the variable
+			Value tmp = env.lookupVar(p.ident_);
+			Value v = new Value.IntValue(tmp.getInt() - 1);
+			env.setVar(p.ident_, v);
+			return tmp;
+		}
+
+		public Value visit(lama.Absyn.EPreIncr p, Env env) {
+			// Pre Increment: ++ i   
+			// Set the incremented value to the variable
+			// Then return this value
+			Value tmp = env.lookupVar(p.ident_);
+			Value v = new Value.IntValue(tmp.getInt() + 1);
+			env.setVar(p.ident_, v);
+			return v;
+		}
+
+		public Value visit(lama.Absyn.EPreDecr p, Env env) {
+			// Pre Decrement: -- i 
+			// Set the decremented value to the variable
+			// Then return this value
+			Value tmp = env.lookupVar(p.ident_);
+			Value v = new Value.IntValue(tmp.getInt() - 1);
+			env.setVar(p.ident_, v);
+			return v;
 		}
     }
 }

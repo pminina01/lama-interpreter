@@ -249,6 +249,62 @@ public class TypeChecker {
 			}
 			return TypeCode.DOUBLE;
 		}
+		public TypeCode visit(EPostIncr p, Env env) {
+			// Post Increment: i ++  
+			// Check if type of the variable is int
+			// If true then return type INT
+			// Otherwise throw an exception
+			TypeCode t = env.lookupVar(p.ident_);
+			if (t != TypeCode.INT) {
+				throw new TypeException("post increment written in " 
+							+ p + 
+							" supports only int parameters, but "
+							+ t + " was given");
+			}
+			return TypeCode.INT;
+		}
+		public TypeCode visit(EPostDecr p, Env env) {
+			// Post Decrement: i -- 
+			// Check if type of the variable is int
+			// If true then return type INT
+			// Otherwise throw an exception
+			TypeCode t = env.lookupVar(p.ident_);
+			if (t != TypeCode.INT) {
+				throw new TypeException("post decrement written in " 
+							+ p + 
+							" supports only int parameters, but "
+							+ t + " was given");
+			}
+			return TypeCode.INT;
+		}
+		public TypeCode visit(EPreIncr p, Env env) {
+			// Pre Increment: ++ i   
+			// Check if type of the variable is int
+			// If true then return type INT
+			// Otherwise throw an exception
+			TypeCode t = env.lookupVar(p.ident_);
+			if (t != TypeCode.INT) {
+				throw new TypeException("pre increment written in " 
+							+ p + 
+							" supports only int parameters, but "
+							+ t + " was given");
+			}
+			return TypeCode.INT;
+		}
+		public TypeCode visit(EPreDecr p, Env env) {
+			// Pre Decrement: -- i 
+			// Check if type of the variable is int
+			// If true then return type INT
+			// Otherwise throw an exception
+			TypeCode t = env.lookupVar(p.ident_);
+			if (t != TypeCode.INT) {
+				throw new TypeException("pre decrement written in " 
+							+ p + 
+							" supports only int parameters, but "
+							+ t + " was given");
+			}
+			return TypeCode.INT;
+		}
 
     }
 

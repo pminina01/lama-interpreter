@@ -1,0 +1,11 @@
+int a ;
+a = 5 ;
+int z = a ++ ;
+print z ;
+int y = ++ a ;
+print y ;
+y = -- a ;
+print y ;
+z = a -- ;
+print z ;
+print a ;
