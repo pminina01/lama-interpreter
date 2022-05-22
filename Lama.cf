@@ -24,6 +24,8 @@ EAdd.       Exp3  ::= Exp3 "+" Exp4 ;
 ESub.       Exp3  ::= Exp3 "-" Exp4 ;
 ELess.      Exp1  ::= Exp2 "<"  Exp2 ;
 EGreater.   Exp1  ::= Exp2 ">"  Exp2 ;
+ELEq.       Exp1  ::= Exp2 "<="  Exp2 ;
+EGEq.       Exp1  ::= Exp2 ">="  Exp2 ;
 
 rules Bool ::= "true" | "false";
 

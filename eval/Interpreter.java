@@ -369,8 +369,7 @@ public class Interpreter {
 		public Value visit(lama.Absyn.ELess p, Env env) {
 			// Less Than: i < 3 
 			// Compare two values and return the answer
-			// => return new IntValue object as result of addition
-			// Otherwise return new DoubleValue object as result of addition
+			// Return new BoolValue object as result of comparison
 			Value v1 = p.exp_1.accept(this, env);
 			Value v2 = p.exp_2.accept(this, env);
 			if (v1.isInt()) {
@@ -381,16 +380,41 @@ public class Interpreter {
 		}
 
 		public Value visit(lama.Absyn.EGreater p, Env env) {
-			// Less Than: i < 3 
+			// Greater Than: i < 3 
 			// Compare two values and return the answer
-			// => return new IntValue object as result of addition
-			// Otherwise return new DoubleValue object as result of addition
+			// Return new BoolValue object as result of comparison
 			Value v1 = p.exp_1.accept(this, env);
 			Value v2 = p.exp_2.accept(this, env);
 			if (v1.isInt()) {
 				return new Value.BoolValue(v1.getInt() > v2.getInt());
 			} else {
 				return new Value.BoolValue(v1.getDouble() > v2.getDouble());
+			}
+		}
+
+		public Value visit(lama.Absyn.ELEq p, Env env) {
+			// Less Than or Equal: i <= 3 
+			// Compare two values and return the answer
+			// Return new BoolValue object as result of comparison
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.BoolValue(v1.getInt() <= v2.getInt());
+			} else {
+				return new Value.BoolValue(v1.getDouble() <= v2.getDouble());
+			}
+		}
+
+		public Value visit(lama.Absyn.EGEq p, Env env) {
+			// Greater Than or Equal: i >= 3 
+			// Compare two values and return the answer
+			// Return new BoolValue object as result of comparison
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.BoolValue(v1.getInt() >= v2.getInt());
+			} else {
+				return new Value.BoolValue(v1.getDouble() >= v2.getDouble());
 			}
 		}
     }
