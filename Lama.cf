@@ -10,26 +10,27 @@ SInit.   Stm ::= Type Ident "=" Exp ";" ;
 SBlock.  Stm ::= "{" [Stm] "}" ;
 SPrint.  Stm ::= "print" Exp  ";" ;
 
-EVar.    Exp7 ::= Ident ;
-EInt.    Exp7 ::= Integer ;
-EDouble. Exp7 ::= Double ;
-EBool.   Exp7 ::= Bool ;
-EPostIncr.  Exp6  ::= Ident "++" ;
-EPostDecr.  Exp6  ::= Ident "--" ;
-EPreIncr.   Exp5  ::= "++" Ident ;
-EPreDecr.   Exp5  ::= "--" Ident ;
-EMul.       Exp4  ::= Exp4 "*" Exp5 ;
-EDiv.       Exp4  ::= Exp4 "/" Exp5 ;
-EAdd.       Exp3  ::= Exp3 "+" Exp4 ;
-ESub.       Exp3  ::= Exp3 "-" Exp4 ;
-ELess.      Exp1  ::= Exp2 "<"  Exp2 ;
-EGreater.   Exp1  ::= Exp2 ">"  Exp2 ;
-ELEq.       Exp1  ::= Exp2 "<="  Exp2 ;
-EGEq.       Exp1  ::= Exp2 ">="  Exp2 ;
+EVar.    Exp8 ::= Ident ;
+EInt.    Exp8 ::= Integer ;
+EDouble. Exp8 ::= Double ;
+EBool.   Exp8 ::= Bool ;
+EPostIncr.  Exp7  ::= Ident "++" ;
+EPostDecr.  Exp7  ::= Ident "--" ;
+EPreIncr.   Exp6  ::= "++" Ident ;
+EPreDecr.   Exp6  ::= "--" Ident ;
+EMul.       Exp5  ::= Exp5 "*" Exp6 ;
+EDiv.       Exp5  ::= Exp5 "/" Exp6 ;
+EAdd.       Exp4  ::= Exp4 "+" Exp5 ;
+ESub.       Exp4  ::= Exp4 "-" Exp5 ;
+ELess.      Exp2  ::= Exp3 "<"  Exp3 ;
+EGreater.   Exp2  ::= Exp3 ">"  Exp3 ;
+ELEq.       Exp2  ::= Exp3 "<="  Exp3 ;
+EGEq.       Exp2  ::= Exp3 ">="  Exp3 ;
+EEq.        Exp1  ::= Exp2 "=="  Exp2 ;
 
 rules Bool ::= "true" | "false";
 
-coercions Exp 7 ;
+coercions Exp 8 ;
 
 TInt.    Type ::= "int" ;
 TDouble. Type ::= "double" ;

@@ -25,6 +25,12 @@ public class Interpreter {
 			return false; 
 		}
 
+		public boolean isDouble() { 
+			// Return boolean if value is double
+			// Default is false, because it is "value"
+			return false; 
+		}
+
 		public Integer getInt() { 
 			// Throw an exception as "value" is not "integer"
 			throw new RuntimeException(this + " is not an integer."); 
@@ -95,6 +101,12 @@ public class Interpreter {
 			public DoubleValue(Double d) { 
 				// Constructor
 				this.d = d; 
+			}
+
+			public boolean isDouble() { 
+				// Return boolean if value is double
+				// As this is double class, then isDouble() is true
+				return true; 
 			}
 
 			public Double getDouble() { 
@@ -415,6 +427,21 @@ public class Interpreter {
 				return new Value.BoolValue(v1.getInt() >= v2.getInt());
 			} else {
 				return new Value.BoolValue(v1.getDouble() >= v2.getDouble());
+			}
+		}
+
+		public Value visit(lama.Absyn.EEq p, Env env) {
+			// Equal: i == 3 
+			// Compare two values and return the answer
+			// Return new BoolValue object as result of comparison
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (v1.isInt()) {
+				return new Value.BoolValue(v1.getInt() == v2.getInt());
+			} else if (v1.isDouble()) {
+				return new Value.BoolValue(v1.getDouble().equals(v2.getDouble()));
+			} else {
+				return new Value.BoolValue(v1.getBool() == v2.getBool());
 			}
 		}
     }
