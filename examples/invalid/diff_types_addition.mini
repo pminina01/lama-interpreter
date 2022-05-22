@@ -1,0 +1,6 @@
+int a = 4 ;
+res = a + 3 ;
+
+double = 1.5 ;
+double exc ;
+exc = 1.5 + 10 ;

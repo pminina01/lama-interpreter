@@ -1,0 +1,9 @@
+int a;
+a = 0 ;
+int res = a ++ ;
+res = ++ a;
+print res ;
+
+double b = 0.0;
+int exc = b ++ ;
+print exc ;
