@@ -1,4 +1,5 @@
 int i = 0;
-if (i > 0) i++; 
+i = i * 6
+if i i++; 
 else int i = 1;
 print i;

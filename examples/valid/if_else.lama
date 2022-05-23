@@ -1,0 +1,10 @@
+int i = 0;
+if (i > 0) i++; 
+else int i = 1;
+print i;
+
+bool k = true;
+int j;
+if k j=1;
+else j=2;
+print j;
