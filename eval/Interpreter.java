@@ -504,5 +504,24 @@ public class Interpreter {
 				return new Value.BoolValue(v1.getBool() != v2.getBool());
 			}
 		}
+
+		public Value visit(lama.Absyn.EAnd p, Env env) {
+			// And: true && false
+			// Conjunction two values and return the answer
+			// Return new BoolValue object as result of comparison
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			return new Value.BoolValue(v1.getBool() && v2.getBool());
+		}
+
+		public Value visit(lama.Absyn.EOr p, Env env) {
+			// Or: true || false
+			// Disjunction two values and return the answer
+			// Return new BoolValue object as result of comparison
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			return new Value.BoolValue(v1.getBool() || v2.getBool());
+		}
+		
     }
 }

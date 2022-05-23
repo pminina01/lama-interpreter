@@ -1,0 +1,5 @@
+bool f = false ;
+int x = 5;
+
+bool exc = f || x ;
+print exc ;

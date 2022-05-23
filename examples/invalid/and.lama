@@ -1,0 +1,5 @@
+bool t = true ;
+int x = 5;
+
+bool exc = x && t ;
+print exc ;

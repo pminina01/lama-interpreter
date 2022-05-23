@@ -463,6 +463,48 @@ public class TypeChecker {
 			return TypeCode.BOOL;
 		}
 
+		public TypeCode visit(EAnd p, Env env) {
+			// And: true && false 
+			// Check if type of both variables is bool
+			// Otherwise throw an exception
+			// If first expression is true then return result of type bool (second expression)
+			// Otherwise - return false
+			TypeCode t1 = p.exp_1.accept(this, env);
+			TypeCode t2 = p.exp_2.accept(this, env);
+			if (t1 != TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							" has type " + t1
+							+ " but expected bool");
+			}
+			if (t2 != TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_2) + 
+							" has type " + t2
+							+ " but expected bool");
+			}
+			return TypeCode.BOOL;
+		}
+
+		public TypeCode visit(EOr p, Env env) {
+			// And: true || false 
+			// Check if type of both variables is bool
+			// Otherwise throw an exception
+			// If first expression is false then return result of type bool (second expression)
+			// Otherwise - return true
+			TypeCode t1 = p.exp_1.accept(this, env);
+			TypeCode t2 = p.exp_2.accept(this, env);
+			if (t1 != TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
+							" has type " + t1
+							+ " but expected bool");
+			}
+			if (t2 != TypeCode.BOOL) {
+				throw new TypeException(PrettyPrinter.print(p.exp_2) + 
+							" has type " + t2
+							+ " but expected bool");
+			}
+			return TypeCode.BOOL;
+		}
+
     }
 
     private TypeCode typeCode(Type t) {
