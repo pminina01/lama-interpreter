@@ -1,5 +1,0 @@
-int a = 1 ;
-bool b = true ;
-double c = 11.1 ;
-d = d + 12 ;
-print d;

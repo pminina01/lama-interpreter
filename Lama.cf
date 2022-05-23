@@ -27,7 +27,6 @@ EGreater.   Exp2  ::= Exp3 ">"  Exp3 ;
 ELEq.       Exp2  ::= Exp3 "<="  Exp3 ;
 EGEq.       Exp2  ::= Exp3 ">="  Exp3 ;
 EEq.        Exp1  ::= Exp2 "=="  Exp2 ;
-ENEq.        Exp1  ::= Exp2 "!="  Exp2 ;
 
 rules Bool ::= "true" | "false";
 

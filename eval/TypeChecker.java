@@ -319,7 +319,7 @@ public class TypeChecker {
 			}
 			if (t1 == TypeCode.BOOL) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							"less operator written in " 
+							"subtraction operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
@@ -340,7 +340,7 @@ public class TypeChecker {
 			}
 			if (t1 == TypeCode.BOOL) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							"greater operator written in " 
+							"subtraction operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
@@ -361,7 +361,7 @@ public class TypeChecker {
 			}
 			if (t1 == TypeCode.BOOL) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							"less or equal operator written in " 
+							"subtraction operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
@@ -382,7 +382,7 @@ public class TypeChecker {
 			}
 			if (t1 == TypeCode.BOOL) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							"greater or equal operator written in " 
+							"subtraction operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
@@ -390,21 +390,6 @@ public class TypeChecker {
 		}
 		public TypeCode visit(EEq p, Env env) {
 			// Equal: i == 3 
-			// Check if type of both variables is the same
-			// If true then return result of type bool 
-			// Otherwise throw an exception
-			TypeCode t1 = p.exp_1.accept(this, env);
-			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
-				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
-							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
-			}
-			return TypeCode.BOOL;
-		}
-		public TypeCode visit(ENEq p, Env env) {
-			// Not equal: i != 3 
 			// Check if type of both variables is the same
 			// If true then return result of type bool 
 			// Otherwise throw an exception

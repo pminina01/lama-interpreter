@@ -1,7 +1,0 @@
-double a = 12.1 ;
-double b = 12.1 ;
-bool c = false ;
-bool res = a == b ;
-print rec ;
-bool exc = a == c ;
-print exc ;
