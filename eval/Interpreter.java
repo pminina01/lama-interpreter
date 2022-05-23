@@ -211,8 +211,8 @@ public class Interpreter {
 		// Class for visiting the corresponding statement and execute it
 
 		public Object visit(lama.Absyn.SExp p, Env env) {
-			// Declaration: int i;
-			// Add variable to the scope as undentified
+			// Expression of any type
+			// Just evaluate it
 			evalExp(p.exp_, env);
 			return null;
 		}
@@ -267,12 +267,35 @@ public class Interpreter {
 			// The condition expression is evaluated first. 
 			// If the value is true, the body is interpreted in the resulting environment, 
 			// and the whilestatement is executed again. Otherwise, exit the loop.
+			// The body of a while statements needs to be interpreted in a fresh context 
+			// block even if it is just a single statement. 
 			Value condition = evalExp(p.exp_, env);
 			while (condition.getBool() == true) {
 				env.enterScope();
 				execStm(p.stm_, env);
 				env.leaveScope();
 				condition = evalExp(p.exp_, env);
+			}
+			return null;
+		}
+
+		public Object visit(lama.Absyn.SIfElse p, Env env) {
+			// IfElse: if (i > 1) {...}
+			//         else {...};
+			// The condition expression is first evaluated.
+			// If the value is `true`, the then-branch (statement before `else`) is interpreted. 
+			// If the value is `false`, the else-branch (statement after `else`) is interpreted.
+			// The branches of the `if` statement are fresh scopes and need 
+			// to be evaluated with new environment blocks. 
+			Value condition = evalExp(p.exp_, env);
+			if (condition.getBool() == true) {
+				env.enterScope();
+				execStm(p.stm_1, env);
+				env.leaveScope();
+			} else {
+				env.enterScope();
+				execStm(p.stm_2, env);
+				env.leaveScope();
 			}
 			return null;
 		}

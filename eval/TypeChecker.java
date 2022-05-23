@@ -78,6 +78,8 @@ public class TypeChecker {
 		// Class for visiting the corresponding statement and check its type
 
 		public Object visit(SExp p, Env env) {
+			// Any expression
+			// Check it
 			inferExp(p.exp_, env);
 			return null;
 		}
@@ -123,7 +125,9 @@ public class TypeChecker {
 		public Object visit(SWhile p, Env env) {
 			// While: while (i > 1) ... ;
 			// Check that the expression in parentheses have type bool.
-			// Enter the scope (add scope to environment), check all statements inside
+			// The body of a while statements needs to be interpreted in a fresh 
+			// context block even if it is just a single statement. 
+			// So, enter the scope (add scope to environment), check all statements inside
 			// then leave the scope (delete scope from the environment)
 			checkExp(p.exp_, TypeCode.BOOL, env);
 			env.enterScope();
@@ -136,6 +140,28 @@ public class TypeChecker {
 			// Print: print 9;
 			// We don't care what the type is, just that there is one
 			inferExp(p.exp_, env);
+			return null;
+		}
+
+		public Object visit(SIfElse p, Env env) {
+			// IfElse: if (i > 1) {...}
+			//         else {...};
+			// Check that the expression in parentheses have type bool.
+			// The branches of the `if` statement are fresh scopes and need 
+			// to be evaluated with new environment blocks. 
+			// Enter the scope (add scope to environment), check `if (true)` branch
+			// then leave the scope (delete scope from the environment) and make the 
+			// same with `else` branch.
+			checkExp(p.exp_, TypeCode.BOOL, env);
+
+			env.enterScope();
+			checkStm(p.stm_1, env);
+			env.leaveScope();
+
+			env.enterScope();
+			checkStm(p.stm_2, env);
+			env.leaveScope();
+			
 			return null;
 		}
     }

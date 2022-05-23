@@ -1,0 +1,4 @@
+int i = 0;
+if (i > 0) i++; 
+else int i = 1;
+print i;

@@ -4,18 +4,19 @@ Prog. Program ::= [Stm] ;
 
 terminator Stm "" ;
 
-SExp.    Stm ::= Exp ";" ;
-SDecl.   Stm ::= Type Ident ";"  ;
-SAss.    Stm ::= Ident "=" Exp ";" ;
-SInit.   Stm ::= Type Ident "=" Exp ";" ;
-SPrint.  Stm ::= "print" Exp  ";" ;
-SWhile.  Stm ::= "while" "(" Exp ")" Stm ;
-SBlock.  Stm ::= "{" [Stm] "}" ;
+SExp.       Stm ::= Exp ";" ;
+SDecl.      Stm ::= Type Ident ";"  ;
+SAss.       Stm ::= Ident "=" Exp ";" ;
+SInit.      Stm ::= Type Ident "=" Exp ";" ;
+SPrint.     Stm ::= "print" Exp  ";" ;
+SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
+SBlock.     Stm ::= "{" [Stm] "}" ;
+SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
 
-EVar.    Exp8 ::= Ident ;
-EInt.    Exp8 ::= Integer ;
-EDouble. Exp8 ::= Double ;
-EBool.   Exp8 ::= Bool ;
+EVar.       Exp8 ::= Ident ;
+EInt.       Exp8 ::= Integer ;
+EDouble.    Exp8 ::= Double ;
+EBool.      Exp8 ::= Bool ;
 EPostIncr.  Exp7  ::= Ident "++" ;
 EPostDecr.  Exp7  ::= Ident "--" ;
 EPreIncr.   Exp6  ::= "++" Ident ;
