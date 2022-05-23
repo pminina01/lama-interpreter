@@ -210,6 +210,13 @@ public class Interpreter {
     private class StmExecuter implements Stm.Visitor<Object,Env> {
 		// Class for visiting the corresponding statement and execute it
 
+		public Object visit(lama.Absyn.SExp p, Env env) {
+			// Declaration: int i;
+			// Add variable to the scope as undentified
+			evalExp(p.exp_, env);
+			return null;
+		}
+
 		public Object visit(lama.Absyn.SDecl p, Env env) {
 			// Declaration: int i;
 			// Add variable to the scope as undentified
@@ -252,6 +259,21 @@ public class Interpreter {
 			// Evaluate expression after print and print it to console
 			Value v = evalExp(p.exp_, env);
 			System.err.println(v.toString());
+			return null;
+		}
+
+		public Object visit(lama.Absyn.SWhile p, Env env) {
+			// While: while (i > 1) ... ;
+			// The condition expression is evaluated first. 
+			// If the value is true, the body is interpreted in the resulting environment, 
+			// and the whilestatement is executed again. Otherwise, exit the loop.
+			Value condition = evalExp(p.exp_, env);
+			while (condition.getBool() == true) {
+				env.enterScope();
+				execStm(p.stm_, env);
+				env.leaveScope();
+				condition = evalExp(p.exp_, env);
+			}
 			return null;
 		}
     }

@@ -4,11 +4,13 @@ Prog. Program ::= [Stm] ;
 
 terminator Stm "" ;
 
+SExp.    Stm ::= Exp ";" ;
 SDecl.   Stm ::= Type Ident ";"  ;
 SAss.    Stm ::= Ident "=" Exp ";" ;
 SInit.   Stm ::= Type Ident "=" Exp ";" ;
-SBlock.  Stm ::= "{" [Stm] "}" ;
 SPrint.  Stm ::= "print" Exp  ";" ;
+SWhile.  Stm ::= "while" "(" Exp ")" Stm ;
+SBlock.  Stm ::= "{" [Stm] "}" ;
 
 EVar.    Exp8 ::= Ident ;
 EInt.    Exp8 ::= Integer ;

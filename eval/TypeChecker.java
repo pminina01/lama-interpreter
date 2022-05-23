@@ -77,6 +77,11 @@ public class TypeChecker {
     private class StmChecker implements Stm.Visitor<Object,Env> {
 		// Class for visiting the corresponding statement and check its type
 
+		public Object visit(SExp p, Env env) {
+			inferExp(p.exp_, env);
+			return null;
+		}
+
 		public Object visit(SDecl p, Env env) {
 			// Declaration: int i;
 			// Add variable to the scope
@@ -111,6 +116,18 @@ public class TypeChecker {
 			for (Stm st : p.liststm_) {
 				checkStm(st, env);
 			}
+			env.leaveScope();
+			return null;
+		}
+
+		public Object visit(SWhile p, Env env) {
+			// While: while (i > 1) ... ;
+			// Check that the expression in parentheses have type bool.
+			// Enter the scope (add scope to environment), check all statements inside
+			// then leave the scope (delete scope from the environment)
+			checkExp(p.exp_, TypeCode.BOOL, env);
+			env.enterScope();
+			checkStm(p.stm_, env);
 			env.leaveScope();
 			return null;
 		}
