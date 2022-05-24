@@ -13,33 +13,39 @@ SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.     Stm ::= "{" [Stm] "}" ;
 SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
 
-EVar.       Exp12  ::= Ident ;
-EInt.       Exp12  ::= Integer ;
-EDouble.    Exp12  ::= Double ;
-EBool.      Exp12  ::= Bool ;
-EPostIncr.  Exp11  ::= Ident "++" ;
-EPostDecr.  Exp11  ::= Ident "--" ;
-EPreIncr.   Exp10  ::= "++" Ident ;
-EPreDecr.   Exp10  ::= "--" Ident ;
-EMul.       Exp9  ::= Exp9 "*" Exp10 ;
-EDiv.       Exp9  ::= Exp9 "/" Exp10 ;
-EAdd.       Exp8  ::= Exp8 "+" Exp9 ;
-ESub.       Exp8  ::= Exp8 "-" Exp9 ;
-ELess.      Exp6  ::= Exp7 "<"  Exp7 ;
-EGreater.   Exp6  ::= Exp7 ">"  Exp7 ;
-ELEq.       Exp6  ::= Exp7 "<=" Exp7 ;
-EGEq.       Exp6  ::= Exp7 ">=" Exp7 ;
-EEq.        Exp5  ::= Exp6 "==" Exp6 ;
-ENEq.       Exp5  ::= Exp6 "!=" Exp6 ;
-EAnd.       Exp3  ::= Exp3 "&&" Exp4 ;
-EOr.        Exp2  ::= Exp2 "||" Exp3 ;
+EVar.       Exp14  ::= Ident ;
+EInt.       Exp14  ::= Integer ;
+EDouble.    Exp14  ::= Double ;
+EBool.      Exp14  ::= Bool ;
+EPostIncr.  Exp12  ::= Ident "++" ;
+EPostDecr.  Exp12  ::= Ident "--" ;
+EPreIncr.   Exp11  ::= "++" Ident ;
+EPreDecr.   Exp11  ::= "--" Ident ;
+EMul.       Exp10  ::= Exp10 "*" Exp11 ;
+EDiv.       Exp10  ::= Exp10 "/" Exp11 ;
+EAdd.       Exp9  ::= Exp9 "+" Exp10 ;
+ESub.       Exp9  ::= Exp9 "-" Exp10 ;
+ELess.      Exp7  ::= Exp8 "<"  Exp8 ;
+EGreater.   Exp7  ::= Exp8 ">"  Exp8 ;
+ELEq.       Exp7  ::= Exp8 "<=" Exp8 ;
+EGEq.       Exp7  ::= Exp8 ">=" Exp8 ;
+EEq.        Exp6  ::= Exp7 "==" Exp7 ;
+ENEq.       Exp6  ::= Exp7 "!=" Exp7 ;
+EAnd.       Exp4  ::= Exp4 "&&" Exp5 ;
+EOr.        Exp3  ::= Exp3 "||" Exp4 ;
+
 Array.      Exp   ::= "[" Type "]" "[" [Exp] "]" ;
+Append.     Exp1  ::= Exp2 ".append(" Exp2 ")" ;
+Head.       Exp1  ::= Exp2 ".first()" ;
+IsEmpty.    Exp1  ::= Exp2 ".isEmpty()";
+Tail.       Exp1 ::= Exp2 ".last()" ;
+
 
 separator Exp "," ;
 
 rules Bool ::= "true" | "false";
 
-coercions Exp 12 ;
+coercions Exp 14 ;
 
 TInt.    Type1 ::= "int" ;
 TDouble. Type1 ::= "double" ;
