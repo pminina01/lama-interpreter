@@ -8,11 +8,51 @@ import java.util.LinkedList;
 public class TypeChecker {
 	// Class for checking the type correctness of a program
 
-    private static enum TypeCode { 
+    private static abstract class TypeCode { 
 		// Store type codes
-        INT    { public String toString() { return "int";    } }, 
-        DOUBLE { public String toString() { return "double"; } },
-		BOOL   { public String toString() { return "bool"; } }
+		String tcode;
+
+		public static class Undefined extends TypeCode {
+			// Class for storing integer type code
+
+			public Undefined() {
+				// Constructor 
+				this.tcode = "undefined";
+			}
+		}
+
+		public static class INT extends TypeCode {
+			// Class for storing integer type code
+
+			public INT() {
+				// Constructor 
+				this.tcode = "int";
+			}
+		}
+		public static class DOUBLE extends TypeCode {
+			// Class for storing integer type code
+
+			public DOUBLE() {
+				// Constructor 
+				this.tcode = "double";
+			}
+		}
+		public static class BOOL extends TypeCode {
+			// Class for storing integer type code
+
+			public BOOL() {
+				// Constructor 
+				this.tcode = "bool";
+			}
+		}
+		public static class ARR extends TypeCode {
+			// Class for storing integer type code
+
+			public ARR(TypeCode t) {
+				// Constructor 
+				this.tcode = "arr of " + t.tcode;
+			}
+		}
     }
 
     private static class Env { 
@@ -32,7 +72,7 @@ public class TypeChecker {
 			// If identifier is not found then throw an exception
 			for (HashMap<String,TypeCode> scope : scopes) {
 				TypeCode t = scope.get(x);
-				if (t != null)
+				if (t!=null)
 					return t;
 			}
 			throw new TypeException("Unknown variable " + x + ".");
@@ -96,6 +136,7 @@ public class TypeChecker {
 			// Lookup for type of variable at left hand side
 			// Then checks right hand side expression
 			TypeCode t = env.lookupVar(p.ident_);
+			//System.out.println("before check has type " + t.tcode);
 			checkExp(p.exp_, t, env);
 			return null;
 		}
@@ -129,7 +170,7 @@ public class TypeChecker {
 			// context block even if it is just a single statement. 
 			// So, enter the scope (add scope to environment), check all statements inside
 			// then leave the scope (delete scope from the environment)
-			checkExp(p.exp_, TypeCode.BOOL, env);
+			checkExp(p.exp_, new TypeCode.BOOL(), env);
 			env.enterScope();
 			checkStm(p.stm_, env);
 			env.leaveScope();
@@ -152,7 +193,7 @@ public class TypeChecker {
 			// Enter the scope (add scope to environment), check `if (true)` branch
 			// then leave the scope (delete scope from the environment) and make the 
 			// same with `else` branch.
-			checkExp(p.exp_, TypeCode.BOOL, env);
+			checkExp(p.exp_, new TypeCode.BOOL(), env);
 
 			env.enterScope();
 			checkStm(p.stm_1, env);
@@ -169,11 +210,13 @@ public class TypeChecker {
     private void checkExp(Exp e, TypeCode t, Env env) {
 		// Check correctness of an expression type 
 		// and comparing it to the expected type t
+		//System.out.println("Inside checkExp, type expected: " + t.tcode);
 		TypeCode et = inferExp(e,env);
-		if (et != t) {
+		//System.out.println("Inside checkExp, type given: " + et.tcode);
+		if (!et.tcode.equals(t.tcode)) {
 			throw new TypeException(PrettyPrinter.print(e) 
-						+ " has type " + et 
-						+ " expected " + t);
+						+ " has type " + et.tcode 
+						+ " expected " + t.tcode);
 		}
     }
 
@@ -193,15 +236,34 @@ public class TypeChecker {
 
 		public TypeCode visit(EInt p, Env env) {
 			// Integer: int i
-			return TypeCode.INT;
+			return new TypeCode.INT();
 		}
 		public TypeCode visit(EDouble p, Env env) {
 			// Double: double d
-			return TypeCode.DOUBLE;
+			return new TypeCode.DOUBLE();
 		}
 		public TypeCode visit(EBool p, Env env) {
 			// Bool: bool b
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
+		}
+		public TypeCode visit(Array p, Env env) {
+			// And: true || false 
+			// Check if type of both variables is bool
+			// Otherwise throw an exception
+			// If first expression is false then return result of type bool (second expression)
+			// Otherwise - return true
+			TypeCode et = new TypeCode.Undefined();
+			for (Exp ex : p.listexp_) {
+				et = inferExp(ex, env);
+				break;
+			}
+			//TypeCode et = typeCode(p.type_);
+			//System.out.println("et in Array: " + et.tcode);
+
+			for (Exp ex : p.listexp_) {
+				checkExp(ex, et, env);
+			}
+			return new TypeCode.ARR(et);
 		}
 		public TypeCode visit(EAdd p, Env env) {
 			// Addition: i + 3 
@@ -210,13 +272,13 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"addition operation written in " 
 							+ p + 
@@ -231,13 +293,13 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"subtraction operation written in " 
 							+ p + 
@@ -255,20 +317,20 @@ public class TypeChecker {
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
 
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"multiplication operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			if (t2 == TypeCode.BOOL) {
+			if (t2.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_2) + 
 							"multiplication operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			if (t1 == TypeCode.DOUBLE || t2 == TypeCode.DOUBLE){
-				return TypeCode.DOUBLE;
+			if (t1.tcode.equals("double") || t2.tcode.equals("double")){
+				return new TypeCode.DOUBLE();
 			}
 			return t1;
 		}
@@ -278,19 +340,19 @@ public class TypeChecker {
 			// If true then return type DOUBLE
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"division operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			if (t2 == TypeCode.BOOL) {
+			if (t2.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_2) + 
 							"division operation written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			return TypeCode.DOUBLE;
+			return new TypeCode.DOUBLE();
 		}
 		public TypeCode visit(EPostIncr p, Env env) {
 			// Post Increment: i ++  
@@ -298,13 +360,13 @@ public class TypeChecker {
 			// If true then return type INT
 			// Otherwise throw an exception
 			TypeCode t = env.lookupVar(p.ident_);
-			if (t != TypeCode.INT) {
+			if (!t.tcode.equals("int")) {
 				throw new TypeException("post increment written in " 
 							+ p + 
 							" supports only int parameters, but "
-							+ t + " was given");
+							+ t.tcode + " was given");
 			}
-			return TypeCode.INT;
+			return new TypeCode.INT();
 		}
 		public TypeCode visit(EPostDecr p, Env env) {
 			// Post Decrement: i -- 
@@ -312,13 +374,13 @@ public class TypeChecker {
 			// If true then return type INT
 			// Otherwise throw an exception
 			TypeCode t = env.lookupVar(p.ident_);
-			if (t != TypeCode.INT) {
+			if (!t.tcode.equals("int")) {
 				throw new TypeException("post decrement written in " 
 							+ p + 
 							" supports only int parameters, but "
-							+ t + " was given");
+							+ t.tcode + " was given");
 			}
-			return TypeCode.INT;
+			return new TypeCode.INT();
 		}
 		public TypeCode visit(EPreIncr p, Env env) {
 			// Pre Increment: ++ i   
@@ -326,13 +388,13 @@ public class TypeChecker {
 			// If true then return type INT
 			// Otherwise throw an exception
 			TypeCode t = env.lookupVar(p.ident_);
-			if (t != TypeCode.INT) {
+			if (!t.tcode.equals("int")) {
 				throw new TypeException("pre increment written in " 
 							+ p + 
 							" supports only int parameters, but "
 							+ t + " was given");
 			}
-			return TypeCode.INT;
+			return new TypeCode.INT();
 		}
 		public TypeCode visit(EPreDecr p, Env env) {
 			// Pre Decrement: -- i 
@@ -340,13 +402,13 @@ public class TypeChecker {
 			// If true then return type INT
 			// Otherwise throw an exception
 			TypeCode t = env.lookupVar(p.ident_);
-			if (t != TypeCode.INT) {
+			if (!t.tcode.equals("int")) {
 				throw new TypeException("pre decrement written in " 
 							+ p + 
 							" supports only int parameters, but "
-							+ t + " was given");
+							+ t.tcode + " was given");
 			}
-			return TypeCode.INT;
+			return new TypeCode.INT();
 		}
 		public TypeCode visit(ELess p, Env env) {
 			// Less Than: i < 3 
@@ -354,19 +416,19 @@ public class TypeChecker {
 			// If true then return BOOL type
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"less operator written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 		public TypeCode visit(EGreater p, Env env) {
 			// Greater Than: i > 3 
@@ -375,19 +437,19 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"greater operator written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 		public TypeCode visit(ELEq p, Env env) {
 			// Less Than or Equal: i <= 3 
@@ -396,19 +458,19 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"less or equal operator written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 		public TypeCode visit(EGEq p, Env env) {
 			// Greater Than or Equal: i >= 3 
@@ -417,19 +479,19 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			if (t1 == TypeCode.BOOL) {
+			if (t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
 							"greater or equal operator written in " 
 							+ p + 
 							" does not support bool parameters");
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 		public TypeCode visit(EEq p, Env env) {
 			// Equal: i == 3 
@@ -438,13 +500,13 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 
 		public TypeCode visit(ENEq p, Env env) {
@@ -454,13 +516,13 @@ public class TypeChecker {
 			// Otherwise throw an exception
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != t2) {
+			if (!t1.tcode.equals(t2.tcode)) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but " + PrettyPrinter.print(p.exp_2)
-							+ " has type " + t2);
+							+ " has type " + t2.tcode);
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 
 		public TypeCode visit(EAnd p, Env env) {
@@ -471,17 +533,17 @@ public class TypeChecker {
 			// Otherwise - return false
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != TypeCode.BOOL) {
+			if (!t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but expected bool");
 			}
-			if (t2 != TypeCode.BOOL) {
+			if (!t2.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_2) + 
-							" has type " + t2
+							" has type " + t2.tcode
 							+ " but expected bool");
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 
 		public TypeCode visit(EOr p, Env env) {
@@ -492,17 +554,17 @@ public class TypeChecker {
 			// Otherwise - return true
 			TypeCode t1 = p.exp_1.accept(this, env);
 			TypeCode t2 = p.exp_2.accept(this, env);
-			if (t1 != TypeCode.BOOL) {
+			if (!t1.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_1) + 
-							" has type " + t1
+							" has type " + t1.tcode
 							+ " but expected bool");
 			}
-			if (t2 != TypeCode.BOOL) {
+			if (!t2.tcode.equals("bool")) {
 				throw new TypeException(PrettyPrinter.print(p.exp_2) + 
-							" has type " + t2
+							" has type " + t2.tcode
 							+ " but expected bool");
 			}
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
 		}
 
     }
@@ -517,17 +579,23 @@ public class TypeChecker {
 
 		public TypeCode visit(TInt t, Object arg) {
 			// Integer
-			return TypeCode.INT;
+			return new TypeCode.INT();
 		}
 
 		public TypeCode visit(TDouble t, Object arg) {
 			// Double
-			return TypeCode.DOUBLE;
+			return new TypeCode.DOUBLE();
 		}
 
 		public TypeCode visit(TBool t, Object arg) {
 			// Bool
-			return TypeCode.BOOL;
+			return new TypeCode.BOOL();
+		}
+
+		public TypeCode visit(TArray t, Object arg) {
+			// Array
+			TypeCode nested_type = typeCode(t.type_);
+			return new TypeCode.ARR(nested_type);
 		}
     }
 

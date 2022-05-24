@@ -148,6 +148,27 @@ public class Interpreter {
 				return b.toString(); 
 			}
 		}
+
+		public static class ArrayValue extends Value {
+			// Class for storing bool value
+
+			private LinkedList elements;
+
+			public ArrayValue(LinkedList elements) { 
+				// Constructor
+				this.elements = elements;			 
+			}
+
+			public LinkedList getArray() { 
+				// Return bool value itself
+				return elements; 
+			}
+
+			public String toString() { 
+				// For printing
+				return elements.toString(); 
+			}
+		}
     }
 
     private static class Env { 
@@ -332,6 +353,16 @@ public class Interpreter {
 			// Bool: bool b
 			// Return BoolValue object
 			return new Value.BoolValue(p.bool_);
+		}
+
+		public Value visit(lama.Absyn.Array p, Env env) {
+			// Bool: bool b
+			// Return BoolValue object
+			LinkedList<Value> elements = new LinkedList<>();
+			for (Exp ex : p.listexp_) {
+				elements.add(evalExp(ex, env));
+			}
+			return new Value.ArrayValue(elements);
 		}
 
 		public Value visit(lama.Absyn.EAdd p, Env env) {

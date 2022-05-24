@@ -33,11 +33,17 @@ EEq.        Exp5  ::= Exp6 "==" Exp6 ;
 ENEq.       Exp5  ::= Exp6 "!=" Exp6 ;
 EAnd.       Exp3  ::= Exp3 "&&" Exp4 ;
 EOr.        Exp2  ::= Exp2 "||" Exp3 ;
+Array.      Exp   ::= "[" Type "]" "[" [Exp] "]" ;
+
+separator Exp "," ;
 
 rules Bool ::= "true" | "false";
 
 coercions Exp 12 ;
 
-TInt.    Type ::= "int" ;
-TDouble. Type ::= "double" ;
-TBool.   Type ::= "bool" ;
+TInt.    Type1 ::= "int" ;
+TDouble. Type1 ::= "double" ;
+TBool.   Type1 ::= "bool" ;
+TArray.  Type ::= "[" Type "]" ;
+
+coercions Type 1 ;
