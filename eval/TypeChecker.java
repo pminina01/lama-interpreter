@@ -296,6 +296,19 @@ public class TypeChecker {
 			checkExp(p.exp_2, el_tcode, env);
 			return et;
 		}
+		public TypeCode visit(Head p, Env env) {
+			// TypeCode of array:
+			TypeCode et = inferExp(p.exp_, env);
+			// check that it is exactly ARRAY:
+			if (!et.isARR()) {
+				throw new TypeException(PrettyPrinter.print(p.exp_) 
+						+ " has type " + et.tcode 
+						+ " array type expected ");
+			}
+			// Type of Array elements:
+			TypeCode el_tcode = et.typeOfElements();
+			return el_tcode;
+		}
 		public TypeCode visit(EAdd p, Env env) {
 			// Addition: i + 3 
 			// Check if type of both variables is the same

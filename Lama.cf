@@ -36,6 +36,7 @@ EOr.        Exp3  ::= Exp3 "||" Exp4 ;
 
 Array.      Exp   ::= "[" Type "]" "[" [Exp] "]" ;
 Append.     Exp1  ::= Exp2 ".append(" Exp2 ")" ;
+Head.       Exp1  ::= Exp2 ".first()" ;
 
 
 separator Exp "," ;

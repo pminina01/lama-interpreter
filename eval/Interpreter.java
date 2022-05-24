@@ -390,6 +390,16 @@ public class Interpreter {
 			return new Value.ArrayValue(elements);
 		}
 
+		public Value visit(lama.Absyn.Head p, Env env) {
+			Value v = p.exp_.accept(this, env);
+			if (!v.isArr()) {
+				throw new RuntimeException(p.exp_ + " expected to be an Array but got " 
+				+ v);
+			} 
+			LinkedList<Value> elements = v.getArray();
+			return elements.getFirst();
+		}
+
 		public Value visit(lama.Absyn.EAdd p, Env env) {
 			// Addition: i + 3 
 			// Check if type of first variables is int 
