@@ -12,6 +12,13 @@ public class TypeChecker {
 		// Store type codes
 		String tcode;
 
+		public boolean isARR() { 
+			return false; 
+		}
+		public TypeCode typeOfElements() { 
+			throw new TypeException(this + " is not an array."); 
+		}
+
 		public static class Undefined extends TypeCode {
 			// Class for storing integer type code
 
@@ -47,10 +54,19 @@ public class TypeChecker {
 		}
 		public static class ARR extends TypeCode {
 			// Class for storing integer type code
+			private TypeCode el_tcode;
 
 			public ARR(TypeCode t) {
 				// Constructor 
 				this.tcode = "arr of " + t.tcode;
+				this.el_tcode = t;
+			}
+			public TypeCode typeOfElements() {
+				// Constructor 
+				return this.el_tcode;
+			}
+			public boolean isARR() { 
+				return true; 
 			}
 		}
     }
@@ -264,6 +280,21 @@ public class TypeChecker {
 				checkExp(ex, et, env);
 			}
 			return new TypeCode.ARR(et);
+		}
+		public TypeCode visit(Append p, Env env) {
+			// TypeCode of array:
+			TypeCode et = inferExp(p.exp_1, env);
+			// check that it is exactly ARRAY:
+			if (!et.isARR()) {
+				throw new TypeException(PrettyPrinter.print(p.exp_1) 
+						+ " has type " + et.tcode 
+						+ " array type expected ");
+			}
+			// Type of Array elements:
+			TypeCode el_tcode = et.typeOfElements();
+			// Type of added element should be the same:
+			checkExp(p.exp_2, el_tcode, env);
+			return et;
 		}
 		public TypeCode visit(EAdd p, Env env) {
 			// Addition: i + 3 

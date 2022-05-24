@@ -31,6 +31,14 @@ public class Interpreter {
 			return false; 
 		}
 
+		public boolean isArr() { 
+			return false; 
+		}
+
+		public LinkedList<Value> getArray() { 
+			throw new RuntimeException(this + " is not an array."); 
+		}
+
 		public Integer getInt() { 
 			// Throw an exception as "value" is not "integer"
 			throw new RuntimeException(this + " is not an integer."); 
@@ -152,14 +160,19 @@ public class Interpreter {
 		public static class ArrayValue extends Value {
 			// Class for storing bool value
 
-			private LinkedList elements;
+			private LinkedList<Value> elements;
 
-			public ArrayValue(LinkedList elements) { 
+			public ArrayValue(LinkedList<Value> elements) { 
 				// Constructor
 				this.elements = elements;			 
 			}
 
-			public LinkedList getArray() { 
+			public boolean isArr() { 
+				// Return bool value itself
+				return true; 
+			}
+
+			public LinkedList<Value> getArray() { 
 				// Return bool value itself
 				return elements; 
 			}
@@ -362,6 +375,18 @@ public class Interpreter {
 			for (Exp ex : p.listexp_) {
 				elements.add(evalExp(ex, env));
 			}
+			return new Value.ArrayValue(elements);
+		}
+
+		public Value visit(lama.Absyn.Append p, Env env) {
+			Value v1 = p.exp_1.accept(this, env);
+			Value v2 = p.exp_2.accept(this, env);
+			if (!v1.isArr()) {
+				throw new RuntimeException(p.exp_1 + " expected to be an Array but got " 
+				+ v1);
+			} 
+			LinkedList<Value> elements = v1.getArray();
+			elements.add(v2);
 			return new Value.ArrayValue(elements);
 		}
 
