@@ -1,6 +1,14 @@
 -- Lama.cf
 
-Prog. Program ::= [Stm] ;
+Prog.       Program ::= [Def] ;
+
+FunDef.	    Def     ::= Type Ident "(" [Arg] ")" "{" [Stm] "}" ;
+
+terminator Def "" ;
+
+Argument.   Arg ::= Type Ident ;
+
+separator  Arg "," ;
 
 terminator Stm "" ;
 
@@ -9,6 +17,7 @@ SDecl.      Stm ::= Type Ident ";"  ;
 SAss.       Stm ::= Ident "=" Exp ";" ;
 SInit.      Stm ::= Type Ident "=" Exp ";" ;
 SPrint.     Stm ::= "print" Exp  ";" ;
+SReturn.    Stm ::= "return" Exp  ";" ;
 SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.     Stm ::= "{" [Stm] "}" ;
 SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
@@ -38,7 +47,7 @@ Array.      Exp   ::= "[" Type "]" "[" [Exp] "]" ;
 Append.     Exp1  ::= Exp2 ".append(" Exp2 ")" ;
 Head.       Exp1  ::= Exp2 ".first()" ;
 IsEmpty.    Exp1  ::= Exp2 ".isEmpty()";
-Last.       Exp1 ::= Exp2 ".last()" ;
+Last.       Exp1  ::= Exp2 ".last()" ;
 
 separator Exp "," ;
 
@@ -46,9 +55,12 @@ rules Bool ::= "true" | "false";
 
 coercions Exp 14 ;
 
-TInt.    Type1 ::= "int" ;
-TDouble. Type1 ::= "double" ;
-TBool.   Type1 ::= "bool" ;
-TArray.  Type ::= "[" Type "]" ;
+TInt.    Type2 ::= "int" ;
+TDouble. Type2 ::= "double" ;
+TBool.   Type2 ::= "bool" ;
+TArray.  Type1 ::= "[" Type1 "]" ;
+TFunc.   Type  ::= Type "(" [Type] ")" ;
 
-coercions Type 1 ;
+separator  Type "," ;
+
+coercions Type 2 ;

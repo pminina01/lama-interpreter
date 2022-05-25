@@ -69,12 +69,33 @@ public class TypeChecker {
 				return true; 
 			}
 		}
+		public static class FUNC extends TypeCode {
+			// Class for storing integer type code
+			private LinkedList<TypeCode> args ;
+			private TypeCode val ;
+
+			public FUNC(){
+				this.args = new LinkedList<TypeCode>();
+			}
+			public void addArg(TypeCode t){
+				this.args.add(t);
+			}
+			public void setVal(TypeCode t){
+				this.val = t;
+			}
+			public void emptyArgs(){
+				this.args = new LinkedList<TypeCode>();
+			}
+		}
     }
 
     private static class Env { 
 		// Class for storing environment variables
 
 		private LinkedList<HashMap<String,TypeCode>> scopes;
+		private TypeCode lastFuncType;
+		private String lastFuncId;
+		private Boolean returnExists;
 
 		public Env() {
 			// Environment for storing context of scopes in linked list.
@@ -119,55 +140,97 @@ public class TypeChecker {
 		// Create environment(context) and check each statement
 		Prog prog = (Prog)p;
 		Env env = new Env();
-		for (Stm s : prog.liststm_) {
-			checkStm(s, env);
+		for (Def d : prog.listdef_) {
+			checkDef(d, env);
 		}
     }
 
-    private void checkStm(Stm st, Env env) {
+	private void checkDef(Def d, Env env) {
 		// Check statement using StmChecker class
 		// 'accept' is method for using a visitor and returning a value
-		st.accept(new StmChecker(), env);
+		d.accept(new DefChecker(), env);
     }
 
-    private class StmChecker implements Stm.Visitor<Object,Env> {
+	public class DefChecker implements Def.Visitor<Object,Env>
+  	{
+	    public Object visit(FunDef p, Env env) {
+			env.enterScope();
+			env.lastFuncType = typeCode(p.type_);
+			env.lastFuncId = p.ident_;
+
+			for (Arg arg: p.listarg_){
+				checkArg(arg, env);
+			}
+			for (Stm st: p.liststm_) {
+				if(checkStm(st, env)) {
+					env.returnExists = true;
+					break;
+				};
+			}
+			env.returnExists = false;
+			env.leaveScope();
+			return null;
+		}
+	}
+
+	private void checkArg(Arg arg, Env env) {
+		// Check statement using StmChecker class
+		// 'accept' is method for using a visitor and returning a value
+		arg.accept(new ArgChecker(), env);
+    }
+
+	public class ArgChecker implements Arg.Visitor<Object, Env> {
+	    public Void visit(Argument arg, Env env) {
+			TypeCode tc = typeCode(arg.type_);
+			env.addVar( arg.ident_, tc);
+			return null;
+	    }
+	}
+
+    private boolean checkStm(Stm st, Env env) {
+		// Check statement using StmChecker class
+		// 'accept' is method for using a visitor and returning a value
+		return st.accept(new StmChecker(), env);
+    }
+
+    private class StmChecker implements Stm.Visitor<Boolean,Env> {
 		// Class for visiting the corresponding statement and check its type
 
-		public Object visit(SExp p, Env env) {
+		public Boolean visit(SExp p, Env env) {
 			// Any expression
 			// Check it
 			inferExp(p.exp_, env);
-			return null;
+			return false;
 		}
 
-		public Object visit(SDecl p, Env env) {
+		public Boolean visit(SDecl p, Env env) {
 			// Declaration: int i;
 			// Add variable to the scope
 			env.addVar(p.ident_, typeCode(p.type_));
-			return null;
+			return false;
 		}
 
-		public Object visit(SAss p, Env env) {
+		public Boolean visit(SAss p, Env env) {
 			// Assignment: i = 9 + j;
 			// Lookup for type of variable at left hand side
 			// Then checks right hand side expression
 			TypeCode t = env.lookupVar(p.ident_);
 			//System.out.println("before check has type " + t.tcode);
 			checkExp(p.exp_, t, env);
-			return null;
+			return false;
 		}
 
-		public Object visit(SInit p, Env env) {
+		public Boolean visit(SInit p, Env env) {
 			// Initialisation: int i = 9 + j;
 			// Add variable to the scope
 			// Then check right hand side expression
 			TypeCode t = typeCode(p.type_);
 			env.addVar(p.ident_, t);
 			checkExp(p.exp_, t, env);
-			return null;
+			return false;
 		}
 
-		public Object visit(SBlock p, Env env) {
+		public Boolean visit(SBlock p, Env env) {
 			// Block: {...}
 			// Enter the scope (add scope to environment), check all statements inside
 			// then leave the scope (delete scope from the environment)
@@ -176,10 +239,10 @@ public class TypeChecker {
 				checkStm(st, env);
 			}
 			env.leaveScope();
-			return null;
+			return false;
 		}
 
-		public Object visit(SWhile p, Env env) {
+		public Boolean visit(SWhile p, Env env) {
 			// While: while (i > 1) ... ;
 			// Check that the expression in parentheses have type bool.
 			// The body of a while statements needs to be interpreted in a fresh 
@@ -190,17 +253,26 @@ public class TypeChecker {
 			env.enterScope();
 			checkStm(p.stm_, env);
 			env.leaveScope();
-			return null;
+			return false;
 		}
 
-		public Object visit(SPrint p, Env env) {
+		public Boolean visit(SPrint p, Env env) {
 			// Print: print 9;
 			// We don't care what the type is, just that there is one
 			inferExp(p.exp_, env);
-			return null;
+			return false;
 		}
 
-		public Object visit(SIfElse p, Env env) {
+		public Boolean visit(SReturn p, Env env) {
+			TypeCode t = inferExp(p.exp_, env);
+			if( env.lastFuncType != t ) {
+				throw new TypeException("Return stm: "+ env.lastFuncId+" of type "+ 
+				env.lastFuncType +" doesnt match return type " + t);   
+			} 
+			return true;
+		}
+
+		public Boolean visit(SIfElse p, Env env) {
 			// IfElse: if (i > 1) {...}
 			//         else {...};
 			// Check that the expression in parentheses have type bool.
@@ -219,7 +291,7 @@ public class TypeChecker {
 			checkStm(p.stm_2, env);
 			env.leaveScope();
 			
-			return null;
+			return false;
 		}
     }
 
