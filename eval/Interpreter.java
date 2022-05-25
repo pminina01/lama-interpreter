@@ -369,8 +369,8 @@ public class Interpreter {
 		}
 
 		public Value visit(lama.Absyn.Array p, Env env) {
-			// Bool: bool b
-			// Return BoolValue object
+			// Array: [int] [1,2,3]
+			// Return ArrayValue object
 			LinkedList<Value> elements = new LinkedList<>();
 			for (Exp ex : p.listexp_) {
 				elements.add(evalExp(ex, env));
@@ -398,6 +398,28 @@ public class Interpreter {
 			} 
 			LinkedList<Value> elements = v.getArray();
 			return elements.getFirst();
+		}
+
+		public Value visit(lama.Absyn.IsEmpty p, Env env) {
+			Value v = p.exp_.accept(this, env);
+			if (!v.isArr()) {
+				throw new RuntimeException(p.exp_ + " expected to be an Array but got " 
+				+ v);
+			} 
+			LinkedList<Value> elements = v.getArray();
+			return new Value.BoolValue(elements.isEmpty());
+		}
+
+		public Value visit(lama.Absyn.Last p, Env env) {
+			//return the last element of the array
+			Value v = p.exp_.accept(this, env);
+			if (!v.isArr()) {
+				throw new RuntimeException(p.exp_ + " expected to be an Array but got " 
+				+ v);
+			} 
+			LinkedList<Value> elements = v.getArray();
+			if (elements.isEmpty()) {throw new RuntimeException(p.exp_ + " Array is empty ");};
+			return elements.getLast();
 		}
 
 		public Value visit(lama.Absyn.EAdd p, Env env) {

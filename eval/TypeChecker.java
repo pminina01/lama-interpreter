@@ -254,26 +254,29 @@ public class TypeChecker {
 			// Integer: int i
 			return new TypeCode.INT();
 		}
+
 		public TypeCode visit(EDouble p, Env env) {
 			// Double: double d
 			return new TypeCode.DOUBLE();
 		}
+
 		public TypeCode visit(EBool p, Env env) {
 			// Bool: bool b
 			return new TypeCode.BOOL();
 		}
+
 		public TypeCode visit(Array p, Env env) {
 			// And: true || false 
 			// Check if type of both variables is bool
 			// Otherwise throw an exception
 			// If first expression is false then return result of type bool (second expression)
 			// Otherwise - return true
-			TypeCode et = new TypeCode.Undefined();
+			/*TypeCode et = new TypeCode.Undefined();
 			for (Exp ex : p.listexp_) {
 				et = inferExp(ex, env);
 				break;
-			}
-			//TypeCode et = typeCode(p.type_);
+			}*/
+			TypeCode et = typeCode(p.type_);
 			//System.out.println("et in Array: " + et.tcode);
 
 			for (Exp ex : p.listexp_) {
@@ -281,6 +284,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.ARR(et);
 		}
+
 		public TypeCode visit(Append p, Env env) {
 			// TypeCode of array:
 			TypeCode et = inferExp(p.exp_1, env);
@@ -296,6 +300,7 @@ public class TypeChecker {
 			checkExp(p.exp_2, el_tcode, env);
 			return et;
 		}
+
 		public TypeCode visit(Head p, Env env) {
 			// TypeCode of array:
 			TypeCode et = inferExp(p.exp_, env);
@@ -309,6 +314,33 @@ public class TypeChecker {
 			TypeCode el_tcode = et.typeOfElements();
 			return el_tcode;
 		}
+
+		public TypeCode visit(IsEmpty p, Env env) {
+			// TypeCode of array:
+			TypeCode et = inferExp(p.exp_, env);
+			// check that it is exactly ARRAY:
+			if (!et.isARR()) {
+				throw new TypeException(PrettyPrinter.print(p.exp_) 
+						+ " has type " + et.tcode 
+						+ " array type expected ");
+			}
+			return new TypeCode.BOOL();
+		}
+
+		public TypeCode visit(Last p, Env env) {
+			// TypeCode of array:
+			TypeCode et = inferExp(p.exp_, env);
+			// check that it is exactly ARRAY:
+			if (!et.isARR()) {
+				throw new TypeException(PrettyPrinter.print(p.exp_) 
+						+ " has type " + et.tcode 
+						+ " array type expected ");
+			}
+			// Type of Array elements:
+			TypeCode el_tcode = et.typeOfElements();
+			return el_tcode;
+		}
+
 		public TypeCode visit(EAdd p, Env env) {
 			// Addition: i + 3 
 			// Check if type of both variables is the same
@@ -330,6 +362,7 @@ public class TypeChecker {
 			}
 			return t1;
 		}
+
 		public TypeCode visit(ESub p, Env env) {
 			// Subtraction: i - 3 
 			// Check if type of both variables is the same
@@ -351,6 +384,7 @@ public class TypeChecker {
 			}
 			return t1;
 		}
+
 		public TypeCode visit(EMul p, Env env) {
 			// Multiplication: i * 3 
 			// Check if type of both variables is numeric
@@ -378,6 +412,7 @@ public class TypeChecker {
 			}
 			return t1;
 		}
+
 		public TypeCode visit(EDiv p, Env env) {
 			// Division: i / 3 
 			// Check if type of both variables is numeric
@@ -398,6 +433,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.DOUBLE();
 		}
+
 		public TypeCode visit(EPostIncr p, Env env) {
 			// Post Increment: i ++  
 			// Check if type of the variable is int
@@ -412,6 +448,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.INT();
 		}
+
 		public TypeCode visit(EPostDecr p, Env env) {
 			// Post Decrement: i -- 
 			// Check if type of the variable is int
@@ -426,6 +463,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.INT();
 		}
+
 		public TypeCode visit(EPreIncr p, Env env) {
 			// Pre Increment: ++ i   
 			// Check if type of the variable is int
@@ -440,6 +478,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.INT();
 		}
+
 		public TypeCode visit(EPreDecr p, Env env) {
 			// Pre Decrement: -- i 
 			// Check if type of the variable is int
@@ -454,6 +493,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.INT();
 		}
+
 		public TypeCode visit(ELess p, Env env) {
 			// Less Than: i < 3 
 			// Check if type of both variables is the same (the numeric one)
@@ -474,6 +514,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.BOOL();
 		}
+
 		public TypeCode visit(EGreater p, Env env) {
 			// Greater Than: i > 3 
 			// Check if type of both variables is the same (the numeric one)
@@ -495,6 +536,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.BOOL();
 		}
+
 		public TypeCode visit(ELEq p, Env env) {
 			// Less Than or Equal: i <= 3 
 			// Check if type of both variables is the same (the numeric one)
@@ -516,6 +558,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.BOOL();
 		}
+
 		public TypeCode visit(EGEq p, Env env) {
 			// Greater Than or Equal: i >= 3 
 			// Check if type of both variables is the same (the numeric one)
@@ -537,6 +580,7 @@ public class TypeChecker {
 			}
 			return new TypeCode.BOOL();
 		}
+
 		public TypeCode visit(EEq p, Env env) {
 			// Equal: i == 3 
 			// Check if type of both variables is the same

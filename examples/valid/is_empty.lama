@@ -1,0 +1,9 @@
+[int] b ;
+b = [int] [1,2,3];
+bool res2 = b.isEmpty();
+print res2;
+
+[int] a ;
+a = [int] [];
+bool res = a.isEmpty();
+print res;

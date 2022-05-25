@@ -202,6 +202,6 @@ https://www.notion.so/Lambda-Programming-Language-c557298411894b74ac4fa3dd8466b9
 
 ### Team members
 
-- **Polina Lamana** - implements type checker, implements compiler
+- **Polina Minina** - implements type checker, implements compiler
 - **Amina Khusnutdinova** - implements syntax, implements compiler
 - **Kseniya Evdokimova** - implements syntax, implements tests
