@@ -12,6 +12,7 @@ SPrint.     Stm ::= "print" Exp  ";" ;
 SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.     Stm ::= "{" [Stm] "}" ;
 SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
+SFun.       Stm ::= Type Ident "(" Type Ident ")" "{" [Stm] "return" Exp "}" ;
 
 EVar.       Exp14  ::= Ident ;
 EInt.       Exp14  ::= Integer ;

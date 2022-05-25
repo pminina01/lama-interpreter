@@ -179,6 +179,23 @@ public class TypeChecker {
 			return null;
 		}
 
+		public Object visit(SFun p, Env env) {
+			TypeCode return_tc = typeCode(p.type_1);
+			env.addVar(p.ident_1, return_tc);
+
+			env.enterScope();
+			TypeCode t = typeCode(p.type_2);
+			env.addVar(p.ident_2, t);
+
+			for (Stm st : p.liststm_) {
+				checkStm(st, env);
+			}
+			TypeCode ex = inferExp(p.exp_, env);
+			checkExp(p.exp_, return_tc, env);
+			env.leaveScope();
+			return ex;
+		}
+
 		public Object visit(SWhile p, Env env) {
 			// While: while (i > 1) ... ;
 			// Check that the expression in parentheses have type bool.

@@ -1,0 +1,4 @@
+int l ( int a ) { 
+    return 5 
+}
+print l;

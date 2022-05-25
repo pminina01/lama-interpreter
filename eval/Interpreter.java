@@ -288,6 +288,21 @@ public class Interpreter {
 			return null;
 		}
 
+		public Object visit(lama.Absyn.SFun p, Env env) {
+			env.addVar(p.ident_1);
+
+			env.enterScope();
+			env.addVar(p.ident_2);
+
+			for (Stm st : p.liststm_) {
+				execStm(st, env);
+			}
+			Value v = evalExp(p.exp_, env);
+			env.leaveScope();
+			env.setVar(p.ident_1, v);
+			return v;
+		}
+
 		public Object visit(lama.Absyn.SPrint p, Env env) {
 			// Print: print 9;
 			// Evaluate expression after print and print it to console
