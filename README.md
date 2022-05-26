@@ -95,6 +95,8 @@ Run program and see the result:
 ### Valid program
 
 ```cpp
+import "empty_program.lama";
+
 int i = 0;
 i --;
 i = 10 + 11 * 11 - 10;
