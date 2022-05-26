@@ -130,30 +130,30 @@ public class TypeChecker {
 		}
     }
 
-    private void checkStm(Stm st, Env env) {
+    private TypeCode checkStm(Stm st, Env env) {
 		// Check statement using StmChecker class
 		// 'accept' is method for using a visitor and returning a value
-		st.accept(new StmChecker(), env);
+		return st.accept(new StmChecker(), env);
     }
 
-    private class StmChecker implements Stm.Visitor<Object,Env> {
+    private class StmChecker implements Stm.Visitor<TypeCode,Env> {
 		// Class for visiting the corresponding statement and check its type
 
-		public Object visit(SExp p, Env env) {
+		public TypeCode visit(SExp p, Env env) {
 			// Any expression
 			// Check it
 			inferExp(p.exp_, env);
 			return null;
 		}
 
-		public Object visit(SDecl p, Env env) {
+		public TypeCode visit(SDecl p, Env env) {
 			// Declaration: int i;
 			// Add variable to the scope
 			env.addVar(p.ident_, typeCode(p.type_));
 			return null;
 		}
 
-		public Object visit(SAss p, Env env) {
+		public TypeCode visit(SAss p, Env env) {
 			// Assignment: i = 9 + j;
 			// Lookup for type of variable at left hand side
 			// Then checks right hand side expression
@@ -163,7 +163,7 @@ public class TypeChecker {
 			return null;
 		}
 
-		public Object visit(SInit p, Env env) {
+		public TypeCode visit(SInit p, Env env) {
 			// Initialisation: int i = 9 + j;
 			// Add variable to the scope
 			// Then check right hand side expression
@@ -173,7 +173,7 @@ public class TypeChecker {
 			return null;
 		}
 
-		public Object visit(SBlock p, Env env) {
+		public TypeCode visit(SBlock p, Env env) {
 			// Block: {...}
 			// Enter the scope (add scope to environment), check all statements inside
 			// then leave the scope (delete scope from the environment)
@@ -185,7 +185,12 @@ public class TypeChecker {
 			return null;
 		}
 
-		public Object visit(SFun p, Env env) {
+		public TypeCode visit(SReturn p, Env env) {
+			TypeCode ret_type = inferExp(p.exp_, env);
+			return ret_type;
+		}
+
+		public TypeCode visit(SFun p, Env env) {
 			TypeCode return_tc = typeCode(p.type_1);
 			env.addVar(p.ident_1, return_tc);
 
@@ -202,7 +207,7 @@ public class TypeChecker {
 			return ex;
 		}
 
-		public Object visit(SWhile p, Env env) {
+		public TypeCode visit(SWhile p, Env env) {
 			// While: while (i > 1) ... ;
 			// Check that the expression in parentheses have type bool.
 			// The body of a while statements needs to be interpreted in a fresh 
@@ -216,14 +221,14 @@ public class TypeChecker {
 			return null;
 		}
 
-		public Object visit(SPrint p, Env env) {
+		public TypeCode visit(SPrint p, Env env) {
 			// Print: print 9;
 			// We don't care what the type is, just that there is one
 			inferExp(p.exp_, env);
 			return null;
 		}
 
-		public Object visit(SIfElse p, Env env) {
+		public TypeCode visit(SIfElse p, Env env) {
 			// IfElse: if (i > 1) {...}
 			//         else {...};
 			// Check that the expression in parentheses have type bool.
@@ -235,17 +240,30 @@ public class TypeChecker {
 			checkExp(p.exp_, new TypeCode.BOOL(), env);
 
 			env.enterScope();
-			checkStm(p.stm_1, env);
+			TypeCode ret_type1 = checkStm(p.stm_1, env);
 			env.leaveScope();
 
 			env.enterScope();
-			checkStm(p.stm_2, env);
+			TypeCode ret_type2 = checkStm(p.stm_2, env);
 			env.leaveScope();
-			
+
+			if (ret_type1.tcode!=null && ret_type2.tcode!=null) {
+				if (!ret_type1.tcode.equals(ret_type2.tcode)) {
+					throw new TypeException(PrettyPrinter.print(p.stm_1)
+						  + " has type " + ret_type1.tcode 
+						  + " expected " + ret_type2.tcode);
+				  }
+			} else if (ret_type1.tcode==null && ret_type2.tcode==null) {
+				return null;
+			} else {
+				throw new TypeException(PrettyPrinter.print(p.stm_1)
+				+ " has type " + ret_type1.tcode 
+				+ " expected " + ret_type2.tcode);
+		}
 			return null;
 		}
 		
-		public Object visit(SImp p, Env env) {
+		public TypeCode visit(SImp p, Env env) {
 			lama.Yylex l_imp = null;
 			try {
 				l_imp = new lama.Yylex(new FileReader(p.string_)); // Lexer

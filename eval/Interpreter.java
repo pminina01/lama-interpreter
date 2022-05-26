@@ -318,6 +318,13 @@ public class Interpreter {
 			return null;
 		}
 
+		public Object visit(lama.Absyn.SReturn p, Env env) {
+			// Print: print 9;
+			// Evaluate expression after print and print it to console
+			Value v = evalExp(p.exp_, env);
+			return v;
+		}
+
 		public Object visit(lama.Absyn.SWhile p, Env env) {
 			// While: while (i > 1) ... ;
 			// The condition expression is evaluated first. 

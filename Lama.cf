@@ -13,6 +13,7 @@ SInit.      Stm ::= Type Ident "=" Exp ";" ;
 SPrint.     Stm ::= "print" Exp  ";" ;
 SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.     Stm ::= "{" [Stm] "}" ;
+SReturn.    Stm ::= "return" Exp ";" ;
 SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
 SFun.       Stm ::= Type Ident "(" Type Ident ")" "{" [Stm] "return" Exp "}" ;
 SImp.       Stm ::= "import" String ";" ;
