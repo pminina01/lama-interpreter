@@ -142,8 +142,7 @@ public class TypeChecker {
 		public TypeCode visit(SExp p, Env env) {
 			// Any expression
 			// Check it
-			inferExp(p.exp_, env);
-			return null;
+			return inferExp(p.exp_, env);
 		}
 
 		public TypeCode visit(SDecl p, Env env) {
@@ -253,18 +252,26 @@ public class TypeChecker {
 			TypeCode ret_type2 = checkStm(p.stm_2, env);
 			env.leaveScope();
 
+			System.out.println(ret_type1);
+			System.out.println(ret_type2);
+			System.out.println(ret_type1==null);
+
 			if (ret_type1!=null && ret_type2!=null) {
 				if (!ret_type1.tcode.equals(ret_type2.tcode)) {
-					throw new TypeException(PrettyPrinter.print(p.stm_1)
-						  + " has type " + ret_type1.tcode 
-						  + " expected " + ret_type2.tcode);
+					throw new TypeException(PrettyPrinter.print(p.stm_2)
+						  + " has type " + ret_type2.tcode 
+						  + " expected " + ret_type1.tcode);
 				  }
 			} else if (ret_type1==null && ret_type2==null) {
 				return null;
-			} else {
-				throw new TypeException(PrettyPrinter.print(p.stm_1)
-				+ " has type " + ret_type1.tcode 
-				+ " expected " + ret_type2.tcode);
+			} else if (ret_type1==null && ret_type2!=null) {
+				throw new TypeException(PrettyPrinter.print(p.stm_2)
+				+ " has type " + ret_type2.tcode 
+				+ " expected None");
+			} else if (ret_type1!=null && ret_type2==null) {
+				throw new TypeException(PrettyPrinter.print(p.stm_2)
+				+ " has type None" 
+				+ " expected " + ret_type1.tcode);
 			}
 			return null;
 		}
@@ -532,7 +539,7 @@ public class TypeChecker {
 							" supports only int parameters, but "
 							+ t.tcode + " was given");
 			}
-			return new TypeCode.INT();
+			return null;//new TypeCode.INT();
 		}
 
 		public TypeCode visit(EPostDecr p, Env env) {
@@ -547,7 +554,7 @@ public class TypeChecker {
 							" supports only int parameters, but "
 							+ t.tcode + " was given");
 			}
-			return new TypeCode.INT();
+			return null;//new TypeCode.INT();
 		}
 
 		public TypeCode visit(EPreIncr p, Env env) {
@@ -562,7 +569,7 @@ public class TypeChecker {
 							" supports only int parameters, but "
 							+ t + " was given");
 			}
-			return new TypeCode.INT();
+			return null;//new TypeCode.INT();
 		}
 
 		public TypeCode visit(EPreDecr p, Env env) {
@@ -577,7 +584,7 @@ public class TypeChecker {
 							" supports only int parameters, but "
 							+ t.tcode + " was given");
 			}
-			return new TypeCode.INT();
+			return null;//new TypeCode.INT();
 		}
 
 		public TypeCode visit(ELess p, Env env) {
