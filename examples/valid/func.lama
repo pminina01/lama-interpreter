@@ -1,4 +1,4 @@
 int l ( int a ) { 
-    return 5 
+    return 5;
 }
 print l;
