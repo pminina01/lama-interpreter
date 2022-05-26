@@ -4,6 +4,6 @@ int l ( int a ) {
         print a;
         a ++ ;
     }
-    return a 
+    return true; 
 }
 print l + 25;

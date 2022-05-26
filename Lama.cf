@@ -15,7 +15,7 @@ SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.     Stm ::= "{" [Stm] "}" ;
 SReturn.    Stm ::= "return" Exp ";" ;
 SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
-SFun.       Stm ::= Type Ident "(" Type Ident ")" "{" [Stm] "return" Exp "}" ;
+SFun.       Stm ::= Type Ident "(" Type Ident ")" "{" [Stm] "}" ;
 SImp.       Stm ::= "import" String ";" ;
 
 EVar.       Exp14  ::= Ident ;

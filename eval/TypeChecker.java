@@ -195,16 +195,22 @@ public class TypeChecker {
 			env.addVar(p.ident_1, return_tc);
 
 			env.enterScope();
-			TypeCode t = typeCode(p.type_2);
-			env.addVar(p.ident_2, t);
+			TypeCode t_arg = typeCode(p.type_2);
+			env.addVar(p.ident_2, t_arg);
 
 			for (Stm st : p.liststm_) {
-				checkStm(st, env);
-			}
-			TypeCode ex = inferExp(p.exp_, env);
-			checkExp(p.exp_, return_tc, env);
+				TypeCode t = checkStm(st, env);
+				if (st instanceof lama.Absyn.SReturn){
+					if (!t.tcode.equals(return_tc.tcode)) {
+						throw new TypeException(p.ident_1
+							+ " has type " + t.tcode 
+							+ " expected " + return_tc.tcode);
+					}
+					break;
+				}
+			}			
 			env.leaveScope();
-			return ex;
+			return return_tc;
 		}
 
 		public TypeCode visit(SWhile p, Env env) {

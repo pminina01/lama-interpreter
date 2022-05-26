@@ -242,30 +242,30 @@ public class Interpreter {
 		}
     }
 
-    private void execStm(Stm st, Env env) {
+    private Value execStm(Stm st, Env env) {
 		// Execute statement using StmExecuter class
 		// 'accept' is method for using a visitor and returning a value
-		st.accept(new StmExecuter(), env);
+		return st.accept(new StmExecuter(), env);
     }
 
-    private class StmExecuter implements Stm.Visitor<Object,Env> {
+    private class StmExecuter implements Stm.Visitor<Value,Env> {
 		// Class for visiting the corresponding statement and execute it
 
-		public Object visit(lama.Absyn.SExp p, Env env) {
+		public Value visit(lama.Absyn.SExp p, Env env) {
 			// Expression of any type
 			// Just evaluate it
 			evalExp(p.exp_, env);
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SDecl p, Env env) {
+		public Value visit(lama.Absyn.SDecl p, Env env) {
 			// Declaration: int i;
 			// Add variable to the scope as undentified
 			env.addVar(p.ident_);
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SAss p, Env env) {
+		public Value visit(lama.Absyn.SAss p, Env env) {
 			// Assignment: i = 9 + j;
 			// Evaluate right hand side expression
 			// Then set left hand side variable to this result
@@ -273,7 +273,7 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SInit p, Env env) {
+		public Value visit(lama.Absyn.SInit p, Env env) {
 			// Initialisation: int i = 9 + j;
 			// Add variable to the scope
 			// Evaluate right hand side expression
@@ -283,7 +283,7 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SBlock p, Env env) {
+		public Value visit(lama.Absyn.SBlock p, Env env) {
 			// Block: {...}
 			// Enter the scope (add scope to environment), execute all statements inside
 			// then leave the scope (delete scope from the environment)
@@ -295,22 +295,47 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SFun p, Env env) {
+		public Value visit(lama.Absyn.SFun p, Env env) {
 			env.addVar(p.ident_1);
 
 			env.enterScope();
 			env.addVar(p.ident_2);
 
+			Value obj = null;
 			for (Stm st : p.liststm_) {
-				execStm(st, env);
+				obj = execStm(st, env);
+				if (st instanceof lama.Absyn.SReturn){
+					break;
+				}
 			}
-			Value v = evalExp(p.exp_, env);
 			env.leaveScope();
-			env.setVar(p.ident_1, v);
-			return v;
+			env.setVar(p.ident_1, obj);
+			return obj;
+
+
+			/*TypeCode return_tc = typeCode(p.type_1);
+			env.addVar(p.ident_1, return_tc);
+
+			env.enterScope();
+			TypeCode t_arg = typeCode(p.type_2);
+			env.addVar(p.ident_2, t_arg);
+
+			for (Stm st : p.liststm_) {
+				TypeCode t = checkStm(st, env);
+				if (st instanceof lama.Absyn.SReturn){
+					if (!t.tcode.equals(return_tc.tcode)) {
+						throw new TypeException(p.ident_1
+							+ " has type " + t.tcode 
+							+ " expected " + return_tc.tcode);
+					}
+					break;
+				}
+			}			
+			env.leaveScope();
+			return return_tc;*/
 		}
 
-		public Object visit(lama.Absyn.SPrint p, Env env) {
+		public Value visit(lama.Absyn.SPrint p, Env env) {
 			// Print: print 9;
 			// Evaluate expression after print and print it to console
 			Value v = evalExp(p.exp_, env);
@@ -318,14 +343,12 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SReturn p, Env env) {
-			// Print: print 9;
-			// Evaluate expression after print and print it to console
+		public Value visit(lama.Absyn.SReturn p, Env env) {
 			Value v = evalExp(p.exp_, env);
 			return v;
 		}
 
-		public Object visit(lama.Absyn.SWhile p, Env env) {
+		public Value visit(lama.Absyn.SWhile p, Env env) {
 			// While: while (i > 1) ... ;
 			// The condition expression is evaluated first. 
 			// If the value is true, the body is interpreted in the resulting environment, 
@@ -342,7 +365,7 @@ public class Interpreter {
 			return null;
 		}
 
-		public Object visit(lama.Absyn.SIfElse p, Env env) {
+		public Value visit(lama.Absyn.SIfElse p, Env env) {
 			// IfElse: if (i > 1) {...}
 			//         else {...};
 			// The condition expression is first evaluated.
@@ -364,7 +387,7 @@ public class Interpreter {
 		}
 
 		
-		public Object visit(lama.Absyn.SImp p, Env env) {
+		public Value visit(lama.Absyn.SImp p, Env env) {
 
 			lama.Yylex l_imp = null;
 			try {

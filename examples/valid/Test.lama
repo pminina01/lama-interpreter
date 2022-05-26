@@ -30,6 +30,9 @@ int funct ( int arg ) {
         print arg;
         arg ++ ;
     }
-    return arg 
+    //print arg;
+    if (arg > 1) return 10;
+    else return False;
+    //return arg 
 }
 print funct;
