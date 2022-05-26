@@ -1,0 +1,4 @@
+bool x ;
+bool t = true ;
+x = t + false ; 
+print x ;

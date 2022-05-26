@@ -1,0 +1,10 @@
+double x ;
+x = 13.0 ;
+double y = 12.78 ;
+print y ;
+{
+  double c = x + y;
+  c = c + 9.7;
+  print c;
+}
+print x ;

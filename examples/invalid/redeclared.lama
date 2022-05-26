@@ -1,0 +1,7 @@
+int a = 0;
+a = a + 142 - 14 ;
+print a;
+
+int a ;
+a = 78;
+print a ;

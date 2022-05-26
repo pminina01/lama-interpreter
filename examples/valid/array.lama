@@ -1,0 +1,4 @@
+[[int]] a ;
+a = [[int]] [[int] [1,2], [int] [3]];
+print a;
+print [bool] [true,true,false];

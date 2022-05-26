@@ -1,0 +1,4 @@
+int a ;
+a = 4;
+bool res = a.isEmpty();
+print res;

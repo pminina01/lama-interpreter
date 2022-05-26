@@ -1,0 +1,58 @@
+-- Lama.cf
+comment "//" ;
+comment "/*" "*/" ;
+
+Prog. Program ::= [Stm] ;
+
+terminator Stm "" ;
+
+SExp.       Stm ::= Exp ";" ;
+SDecl.      Stm ::= Type Ident ";"  ;
+SAss.       Stm ::= Ident "=" Exp ";" ;
+SInit.      Stm ::= Type Ident "=" Exp ";" ;
+SPrint.     Stm ::= "print" Exp  ";" ;
+SWhile.     Stm ::= "while" "(" Exp ")" Stm ;
+SBlock.     Stm ::= "{" [Stm] "}" ;
+SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
+SFun.       Stm ::= Type Ident "(" Type Ident ")" "{" [Stm] "return" Exp "}" ;
+SImp.       Stm ::= "import" String ";" ;
+
+EVar.       Exp14  ::= Ident ;
+EInt.       Exp14  ::= Integer ;
+EDouble.    Exp14  ::= Double ;
+EBool.      Exp14  ::= Bool ;
+EPostIncr.  Exp12  ::= Ident "++" ;
+EPostDecr.  Exp12  ::= Ident "--" ;
+EPreIncr.   Exp11  ::= "++" Ident ;
+EPreDecr.   Exp11  ::= "--" Ident ;
+EMul.       Exp10  ::= Exp10 "*" Exp11 ;
+EDiv.       Exp10  ::= Exp10 "/" Exp11 ;
+EAdd.       Exp9  ::= Exp9 "+" Exp10 ;
+ESub.       Exp9  ::= Exp9 "-" Exp10 ;
+ELess.      Exp7  ::= Exp8 "<"  Exp8 ;
+EGreater.   Exp7  ::= Exp8 ">"  Exp8 ;
+ELEq.       Exp7  ::= Exp8 "<=" Exp8 ;
+EGEq.       Exp7  ::= Exp8 ">=" Exp8 ;
+EEq.        Exp6  ::= Exp7 "==" Exp7 ;
+ENEq.       Exp6  ::= Exp7 "!=" Exp7 ;
+EAnd.       Exp4  ::= Exp4 "&&" Exp5 ;
+EOr.        Exp3  ::= Exp3 "||" Exp4 ;
+
+Array.      Exp   ::= "[" Type "]" "[" [Exp] "]" ;
+Append.     Exp1  ::= Exp2 ".append(" Exp2 ")" ;
+Head.       Exp1  ::= Exp2 ".first()" ;
+IsEmpty.    Exp1  ::= Exp2 ".isEmpty()";
+Last.       Exp1 ::= Exp2 ".last()" ;
+
+separator Exp "," ;
+
+rules Bool ::= "true" | "false";
+
+coercions Exp 14 ;
+
+TInt.    Type1 ::= "int" ;
+TDouble. Type1 ::= "double" ;
+TBool.   Type1 ::= "bool" ;
+TArray.  Type ::= "[" Type "]" ;
+
+coercions Type 1 ;

@@ -1,0 +1,4 @@
+[int] a ;
+a = [int] [1,2,3];
+double res = a.last();
+print res;

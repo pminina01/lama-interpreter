@@ -1,0 +1,4 @@
+int a = 1 ;
+bool b = false ;
+double c = 2 ;
+print c ;

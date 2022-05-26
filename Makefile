@@ -3,29 +3,29 @@ JAVAC_FLAGS = -sourcepath .
 
 JAVA = java
 
-.PHONY: bnfc runmini clean distclean vclean
+.PHONY: bnfc runlama clean distclean vclean
 
-all: bnfc runmini
+all: bnfc runlama
 
-runmini:
-	${JAVAC} ${JAVAC_FLAGS} runmini.java
-	chmod a+x runmini
+runlama:
+	${JAVAC} ${JAVAC_FLAGS} runlama.java
+	chmod a+x runlama
 
 bnfc:
-	bnfc -m --java Mini.cf
-	${JAVA} ${JAVA_FLAGS} JLex.Main Mini/Yylex
-	${JAVA} ${JAVA_FLAGS} java_cup.Main -nopositions Mini/_cup.cup
-	move sym.java Mini | move parser.java Mini
+	bnfc -m --java Lama.cf
+	${JAVA} ${JAVA_FLAGS} JLex.Main Lama/Yylex
+	${JAVA} ${JAVA_FLAGS} java_cup.Main -nopositions Lama/_cup.cup
+	move sym.java Lama | move parser.java Lama
 
 clean:
-	 -rm -f Mini/Absyn/*.class Mini/*.class
-	 -rm -f .dvi Mini.aux Mini.log Mini.ps  *.class
+	 -rm -f Lama/Absyn/*.class Lama/*.class
+	 -rm -f .dvi Lama.aux Lama.log Lama.ps  *.class
 
 distclean: vclean
 
 vclean: clean
-	 -rm -f Mini/Absyn/*.java
-	 -rmdir Mini/Absyn/
-	 -rm -f Mini.tex Mini.dvi Mini.aux Mini.log Mini.ps 
-	 -rm -f Mini/Yylex Mini/Mini.cup Mini/Yylex.java Mini/VisitSkel.java Mini/ComposVisitor.java Mini/AbstractVisitor.java Mini/FoldVisitor.java Mini/AllVisitor.java Mini/PrettyPrinter.java Mini/Skeleton.java Mini/Test.java Mini/sym.java Mini/parser.java Mini/*.class
-	 -rmdir -p Mini/
+	 -rm -f Lama/Absyn/*.java
+	 -rmdir Lama/Absyn/
+	 -rm -f Lama.tex Lama.dvi Lama.aux Lama.log Lama.ps 
+	 -rm -f Lama/Yylex Lama/Lama.cup Lama/Yylex.java Lama/VisitSkel.java Lama/ComposVisitor.java Lama/AbstractVisitor.java Lama/FoldVisitor.java Lama/AllVisitor.java Lama/PrettyPrinter.java Lama/Skeleton.java Lama/Test.java Lama/sym.java Lama/parser.java Lama/*.class
+	 -rmdir -p Lama/

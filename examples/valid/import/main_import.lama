@@ -1,0 +1,5 @@
+import "examples/valid/import/additional_import.lama";
+int i = 9;
+print b;
+b = a + i;
+print b;

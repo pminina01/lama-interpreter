@@ -1,0 +1,12 @@
+int a = 5 ;
+int b = 6 ;
+bool z = a == b ;
+print z ;
+print (5 == a) ;
+double d = 0.5 ;
+double d1 = 0.5 ;
+print (d == d1) ;
+bool l = true ;
+bool k = false ;
+print (k == l) ;
+print (true == l) ;

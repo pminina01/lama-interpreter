@@ -1,0 +1,10 @@
+bool t = true ;
+bool f = false ;
+
+bool res1 = t || f ;
+print res1 ;
+
+bool res2 = f || false ;
+print res2 ;
+
+print (res1 || res2) ;
