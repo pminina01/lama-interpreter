@@ -1,0 +1,3 @@
+import "library/consts.lama";
+print pi;
+print e;
