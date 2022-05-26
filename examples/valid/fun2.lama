@@ -1,9 +1,8 @@
 int l ( int a ) { 
-    a = 7;
     while (a < 10) {
         print a;
         a ++ ;
     }
-    return a 
+    return a ;
 }
-print l;
+print l (2);

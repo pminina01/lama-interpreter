@@ -55,6 +55,14 @@ public class Interpreter {
 			throw new RuntimeException(this + " is not an integer."); 
 		}
 
+		public String apply(Value v) { 
+			throw new RuntimeException(this + " is not a func. Apply works only for func."); 
+		}
+
+		public ListStm getFuncSt () { 
+			throw new RuntimeException(this + " is not a func. Apply works only for func."); 
+		}
+
 		public Double getDouble() { 
 			// Throw an exception as "value" is not "double"
 			throw new RuntimeException(this + " is not a double."); 
@@ -197,16 +205,29 @@ public class Interpreter {
 		public static class FuncValue extends Value {
 			// Class for storing bool value
 
-			private String args_val;
+			private HashMap<String,Value> context;
+			private ListStm statements;
+			private String arg_ident;
 
-			public FuncValue(String arg) { 
+			public FuncValue(String arg_ident, ListStm statements) { 
 				// Constructor
-				this.args_val = arg;			 
+				this.arg_ident = arg_ident;
+				this.context = new HashMap<String,Value>();
+				this.context.put(arg_ident, new Value.Undefined());		
+				this.statements	= statements; 
 			}
 
-			public boolean isFunc() { 
-				// Return bool value itself
+			public boolean isFunc() {
 				return true; 
+			}
+
+			public ListStm getFuncSt () {
+				return statements; 
+			}
+
+			public String apply(Value v) { 
+				this.context.replace(this.arg_ident, v);
+				return this.arg_ident;
 			}
 		}
     }
@@ -316,24 +337,35 @@ public class Interpreter {
 		}
 
 		public Value visit(lama.Absyn.SFun p, Env env) {
-
+			// Add new Function to env
 			env.addVar(p.ident_1);
-			Value.FuncValue func = new Value.FuncValue(p.ident_2);
+			String arg_ident = p.ident_2;
+			ListStm statements = p.liststm_;
+			Value.FuncValue func = new Value.FuncValue(arg_ident, statements);
 			env.setVar(p.ident_1, func);
 
-			env.enterScope();
-			env.addVar(p.ident_2);
+			//System.out.println("Func is: " + func);
 
-			Value obj = null;
-			for (Stm st : p.liststm_) {
-				obj = execStm(st, env);
+			env.enterScope();
+
+			Value v = new Value.Undefined();
+
+			for (Stm st : statements) {
+				try {
+					v = execStm(st, env);
+				} catch (Exception e) {
+					//System.out.println("Catch: " + e);
+					env.leaveScope();
+					return func;
+				}
+
 				if (st instanceof lama.Absyn.SReturn){
 					break;
 				}
 			}
 			env.leaveScope();
 
-			env.setVar(p.ident_1, obj);
+			env.setVar(p.ident_1, v);
 			return func;
 		}
 
@@ -534,14 +566,29 @@ public class Interpreter {
 
 		public Value visit(lama.Absyn.EApp p, Env env) {
 			Value func = env.lookupVar(p.ident_);
-			
+
 			if (!func.isFunc()){
 				throw new RuntimeException(p.ident_+ 
 				" expected to be a Func but got " + func);
 			}
 
 			Value arg = evalExp(p.exp_, env);
-			return arg;
+
+			String arg_ident = func.apply(arg);
+
+			Value v = new Value.Undefined();
+
+			ListStm fun_st = func.getFuncSt();
+			env.enterScope();
+			env.addVar(arg_ident);
+			env.setVar(arg_ident, arg);
+
+			for (Stm st : fun_st) {
+				v = execStm(st, env);
+			}
+			env.leaveScope();
+
+			return v;
 		}
 
 		public Value visit(lama.Absyn.ESub p, Env env) {
