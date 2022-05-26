@@ -1,16 +1,23 @@
 package eval;
 import lama.Absyn.*;
+import lama.Yylex;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.io.*;
 
 public class Interpreter {
 	// Class for interpreting the program
 
+	private Env env;
+
+	public Interpreter() {
+		env = new Env();
+	}
+
     public void interpret(Program p) {
 		// Create empty environment of a program and execute statements
 		Prog prog = (Prog)p;
-		Env env = new Env();
 		for (Stm s : prog.liststm_) {
 			execStm(s, env);
 		}
@@ -346,6 +353,48 @@ public class Interpreter {
 				execStm(p.stm_2, env);
 				env.leaveScope();
 			}
+			return null;
+		}
+
+		
+		public Object visit(lama.Absyn.SImp p, Env env) {
+
+			lama.Yylex l_imp = null;
+			try {
+				l_imp = new lama.Yylex(new FileReader(p.string_)); // Lexer
+				lama.parser p_imp = new lama.parser(l_imp); // Parser
+				lama.Absyn.Program parse_tree_imp = p_imp.pProgram(); // Parse tree
+				Interpreter imp = new Interpreter(); // Interpret
+				imp.interpret(parse_tree_imp);
+				Env env_imp = imp.env;
+				HashMap<String,Value> scopes_imp = env_imp.scopes.get(0);
+				for (String key : scopes_imp.keySet()) {
+					env.addVar(key);
+					env.setVar(key, scopes_imp.get(key));
+				}							
+			} catch (TypeException e) {
+				// Type error
+				System.out.println("TYPE ERROR");
+				System.err.println(e.toString());
+				System.exit(1);
+			} catch (RuntimeException e) {
+				// Runtime error
+				System.out.println("RUNTIME ERROR");
+				System.err.println(e.toString());
+				System.exit(1);
+			} catch (java.io.IOException e) {
+				// IO error
+				System.err.println(e.toString());
+				System.exit(1);
+			} catch (Throwable e) {
+				// Syntax error
+				System.out.println("SYNTAX ERROR");
+				System.out.println("At line " + String.valueOf(l_imp.line_num()) 
+						+ ", near \"" + l_imp.buff() + "\" :");
+				System.out.println("     " + e.getMessage());
+				e.printStackTrace();
+				System.exit(1);
+			}			
 			return null;
 		}
     }
