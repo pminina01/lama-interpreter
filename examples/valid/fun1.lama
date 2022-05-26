@@ -1,9 +1,9 @@
+int a = 1 ;
 int l ( int a ) { 
-    a = 7;
     while (a < 10) {
         print a;
         a ++ ;
     }
-    return true; 
+    return a; 
 }
 print l + 25;

@@ -22,8 +22,17 @@ public class TypeChecker {
 		public boolean isARR() { 
 			return false; 
 		}
+		public boolean isFunc() { 
+			return false; 
+		}
 		public TypeCode typeOfElements() { 
 			throw new TypeException(this + " is not an array."); 
+		}
+		public TypeCode getArgs() { 
+			throw new TypeException(this + " is not an func."); 
+		}
+		public TypeCode getRet() { 
+			throw new TypeException(this + " is not an func."); 
 		}
 
 		public static class Undefined extends TypeCode {
@@ -76,6 +85,26 @@ public class TypeChecker {
 				return true; 
 			}
 		}
+		public static class FUNC extends TypeCode {
+			private TypeCode ret_code;
+			private TypeCode art_code;
+
+			public FUNC(TypeCode rt, TypeCode at) {
+				// Constructor 
+				this.tcode = "Func: " + rt.tcode;
+				this.ret_code = rt;
+				this.art_code = at;
+			}
+			public boolean isFunc() { 
+				return true; 
+			}
+			public TypeCode getArgs() { 
+				return this.art_code; 
+			}
+			public TypeCode getRet() { 
+				return this.ret_code; 
+			}
+		}
     }
 
     private static class Env { 
@@ -87,6 +116,7 @@ public class TypeChecker {
 			// Environment for storing context of scopes in linked list.
 			// Structure: [{'ident':'type','s2':'c2',...},{'s3':'c3',...},...]
 			scopes = new LinkedList<HashMap<String,TypeCode>>();
+
 			enterScope();
 		}
 
@@ -192,10 +222,11 @@ public class TypeChecker {
 
 		public TypeCode visit(SFun p, Env env) {
 			TypeCode return_tc = typeCode(p.type_1);
-			env.addVar(p.ident_1, return_tc);
-
-			env.enterScope();
 			TypeCode t_arg = typeCode(p.type_2);
+			TypeCode.FUNC func = new TypeCode.FUNC(return_tc, t_arg);
+
+			env.addVar(p.ident_1, func);
+			env.enterScope();
 			env.addVar(p.ident_2, t_arg);
 
 			for (Stm st : p.liststm_) {
@@ -210,7 +241,7 @@ public class TypeChecker {
 				}
 			}			
 			env.leaveScope();
-			return return_tc;
+			return func;
 		}
 
 		public TypeCode visit(SWhile p, Env env) {
@@ -386,6 +417,24 @@ public class TypeChecker {
 			checkExp(p.exp_2, el_tcode, env);
 			return et;
 		}
+
+		public TypeCode visit(EApp p, Env env) {
+
+			TypeCode func = env.lookupVar(p.ident_);
+
+			if (!func.isFunc()) {
+				throw new TypeException(p.ident_ 
+						+ " has type " + func.tcode 
+						+ " function type expected ");
+			}
+
+			TypeCode arg_tcode = func.getArgs();
+			// Type of added element should be the same:
+			checkExp(p.exp_, arg_tcode, env);
+			TypeCode ret_tcode = func.getRet();
+			return ret_tcode;
+		}
+
 
 		public TypeCode visit(Head p, Env env) {
 			// TypeCode of array:
@@ -770,6 +819,13 @@ public class TypeChecker {
 			// Array
 			TypeCode nested_type = typeCode(t.type_);
 			return new TypeCode.ARR(nested_type);
+		}
+
+		public TypeCode visit(TFunct t, Object arg) {
+			// Array
+			TypeCode ret_type = typeCode(t.type_1);
+			TypeCode arg_type = typeCode(t.type_2);
+			return new TypeCode.FUNC(ret_type, arg_type);
 		}
     }
 

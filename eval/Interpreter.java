@@ -32,6 +32,10 @@ public class Interpreter {
 			return false; 
 		}
 
+		public boolean isFunc() { 
+			return false; 
+		}
+
 		public boolean isDouble() { 
 			// Return boolean if value is double
 			// Default is false, because it is "value"
@@ -189,6 +193,22 @@ public class Interpreter {
 				return elements.toString(); 
 			}
 		}
+
+		public static class FuncValue extends Value {
+			// Class for storing bool value
+
+			private String args_val;
+
+			public FuncValue(String arg) { 
+				// Constructor
+				this.args_val = arg;			 
+			}
+
+			public boolean isFunc() { 
+				// Return bool value itself
+				return true; 
+			}
+		}
     }
 
     private static class Env { 
@@ -296,7 +316,10 @@ public class Interpreter {
 		}
 
 		public Value visit(lama.Absyn.SFun p, Env env) {
+
 			env.addVar(p.ident_1);
+			Value.FuncValue func = new Value.FuncValue(p.ident_2);
+			env.setVar(p.ident_1, func);
 
 			env.enterScope();
 			env.addVar(p.ident_2);
@@ -309,30 +332,9 @@ public class Interpreter {
 				}
 			}
 			env.leaveScope();
+
 			env.setVar(p.ident_1, obj);
-			return obj;
-
-
-			/*TypeCode return_tc = typeCode(p.type_1);
-			env.addVar(p.ident_1, return_tc);
-
-			env.enterScope();
-			TypeCode t_arg = typeCode(p.type_2);
-			env.addVar(p.ident_2, t_arg);
-
-			for (Stm st : p.liststm_) {
-				TypeCode t = checkStm(st, env);
-				if (st instanceof lama.Absyn.SReturn){
-					if (!t.tcode.equals(return_tc.tcode)) {
-						throw new TypeException(p.ident_1
-							+ " has type " + t.tcode 
-							+ " expected " + return_tc.tcode);
-					}
-					break;
-				}
-			}			
-			env.leaveScope();
-			return return_tc;*/
+			return func;
 		}
 
 		public Value visit(lama.Absyn.SPrint p, Env env) {
@@ -528,6 +530,18 @@ public class Interpreter {
 			} else {
 				return new Value.DoubleValue(v1.getDouble() + v2.getDouble());
 			}
+		}
+
+		public Value visit(lama.Absyn.EApp p, Env env) {
+			Value func = env.lookupVar(p.ident_);
+			
+			if (!func.isFunc()){
+				throw new RuntimeException(p.ident_+ 
+				" expected to be a Func but got " + func);
+			}
+
+			Value arg = evalExp(p.exp_, env);
+			return arg;
 		}
 
 		public Value visit(lama.Absyn.ESub p, Env env) {

@@ -18,6 +18,7 @@ SIfElse.    Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
 SFun.       Stm ::= Type Ident "(" Type Ident ")" "{" [Stm] "}" ;
 SImp.       Stm ::= "import" String ";" ;
 
+EApp.       Exp14  ::= Ident "(" Exp ")" ;
 EVar.       Exp14  ::= Ident ;
 EInt.       Exp14  ::= Integer ;
 EDouble.    Exp14  ::= Double ;
@@ -51,9 +52,10 @@ rules Bool ::= "true" | "false";
 
 coercions Exp 14 ;
 
-TInt.    Type1 ::= "int" ;
-TDouble. Type1 ::= "double" ;
-TBool.   Type1 ::= "bool" ;
-TArray.  Type ::= "[" Type "]" ;
+TInt.    Type2 ::= "int" ;
+TDouble. Type2 ::= "double" ;
+TBool.   Type2 ::= "bool" ;
+TArray.  Type1 ::= "[" Type1 "]" ;
+TFunct.  Type ::= "(" Type ")" "[" Type "]" ;
 
-coercions Type 1 ;
+coercions Type 2 ;
