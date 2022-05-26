@@ -252,10 +252,6 @@ public class TypeChecker {
 			TypeCode ret_type2 = checkStm(p.stm_2, env);
 			env.leaveScope();
 
-			System.out.println(ret_type1);
-			System.out.println(ret_type2);
-			System.out.println(ret_type1==null);
-
 			if (ret_type1!=null && ret_type2!=null) {
 				if (!ret_type1.tcode.equals(ret_type2.tcode)) {
 					throw new TypeException(PrettyPrinter.print(p.stm_2)
