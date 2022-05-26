@@ -253,19 +253,19 @@ public class TypeChecker {
 			TypeCode ret_type2 = checkStm(p.stm_2, env);
 			env.leaveScope();
 
-			if (ret_type1.tcode!=null && ret_type2.tcode!=null) {
+			if (ret_type1!=null && ret_type2!=null) {
 				if (!ret_type1.tcode.equals(ret_type2.tcode)) {
 					throw new TypeException(PrettyPrinter.print(p.stm_1)
 						  + " has type " + ret_type1.tcode 
 						  + " expected " + ret_type2.tcode);
 				  }
-			} else if (ret_type1.tcode==null && ret_type2.tcode==null) {
+			} else if (ret_type1==null && ret_type2==null) {
 				return null;
 			} else {
 				throw new TypeException(PrettyPrinter.print(p.stm_1)
 				+ " has type " + ret_type1.tcode 
 				+ " expected " + ret_type2.tcode);
-		}
+			}
 			return null;
 		}
 		
