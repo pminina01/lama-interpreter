@@ -1,4 +1,6 @@
 -- Lama.cf
+comment "//" ;
+comment "/*" "*/" ;
 
 Prog. Program ::= [Stm] ;
 
