@@ -5,60 +5,6 @@ _The full documentation is in Notion: https://www.notion.so/Lambda-Programming-L
 Lambda is imperative interpreted programming C++ like language.
 Extension of the Lambda programming language id `.lama`.
 
-A Lambda program is a sequence of definitions. It may also contain comments and preprocessor directives. It may have a function `main` of type `int` that takes no arguments. It may or may not have a `return` statement.
-
-```cpp
-    int main () {
-      ...
-    }
-```
-
-Lambda language has two **built-in functions** dealing with input and output:
-
-```cpp
-    void print(T x);   // prints an argument of type T and a newline in standard output
-    T    read();       // reads an argument of type T from standard input
-```
-
-## Features
-    
-- Statements
-	- While loops
-	- Conditionals (`if {...} else {...}  // No else-less if`)
-	- Blocks, etc.
-- Expressions
-	- Literals (integer, floating point and true, false literals)
-	- Identifiers
-	- Function call
-	- Post- and preincrement and post- and predecrement, eg. i++, i--, ++i, --i
-	- Arithmetic operations (addition, subtraction, multiplication, and division)
-	- Comparisons (`<, >, >=, <=, == b, != b)
-	- Binaries, e.g. (`&&,||`)
-   	- Assignment, e.g. x = a
-- Base types
-	- int: integer numbers, e.g. `-47` is int value
-	- double: numbers with remainder, e.g. `3.14159`
-	- bool: boolean values, e.g. `true` and `false`
-	- string: string/text values, e.g. `‘Hello, world!’` (use single and double quotes)
-	- void: can be perceived as an empty or undefined value, which need never be shown
-- User-defined terms and types (user-defined types are structured algebraic data types)
-- Nested definitions
-- Sequencing
-- Type Ascription
-- Class fields/methods accessibility level
-- General Recursion
-- Let-bindings
-- Tuples
-- Records
-- Built-in Lists
-- Built-in Arrays
-- Built-in Dict
-- Subtyping
-- Simple Constraint-Based Type Inference (e.g. support auto types)
-- Standard Library
-- Exceptions
-
-
 ## Implementation
 
 ### Environment
@@ -80,11 +26,14 @@ You probably want to clean up previous build files first:
 make clean
 ```
 
+Make sure to SET CLASSPATH for JavaCup and JLex before the next command.
+
 Run make file for generating parser and lexer. This should generate `Lama/Test` files that you can now use to test parsing of the source code in the target language.
 
 ```bash
 make
 ```
+If the sym and parser files are not automatically moved, move them manually to the lama folder
 
 Compile `eval` folder
 
@@ -146,50 +95,59 @@ Run program and see the result:
 ### Valid program
 
 ```cpp
-int main ()
-  {
-    int i = read();
-		int factorial(int num) /* Let's create the factorial function */
-    {
-			if (5!=7) && (num > 0) 
-			{ 
-				int result = 1
-				while (num > 0)
-				{
-					result = result * num;
-					--num;
-				};
-				return result;
-			};
-			else return 1;
+int i = 0;
+i --;
+i = 10 + 11 * 11 - 10;
+i ++ ;
+print i;
+
+double d;
+d = 10/2;
+if (d > 0.0) print true; 
+else print false;
+
+bool t = true;
+print true == t ;
+print t || false && false;
+
+[int] a ;
+a = [int] [];
+print a;
+print a.isEmpty();
+
+[[int]] arr = [[int]] [[int][6]];
+print arr;
+arr.append(a);
+print arr.first();
+
+int funct ( int arg ) { 
+    arg = 7;
+    while (arg < 10) {
+        print arg;
+        arg ++ ;
     }
-		factorial(7) // function call
-  }
+    return arg 
+}
+print funct;
 ```
 
 ### Invalid Program - Type error
 
 ```cpp
-int y;
-y = x + 3;
-print(y);
+int a;
+a = 0 ;
+int res = a -- ;
+res = -- a;
+print res ;
+
+bool b = true;
+int exc = b ++ ;
+print exc ;
 ```
 
 ```cpp
 TYPE ERROR
-eval.TypeException: Unknown variable x.
-```
-
-### Invalid Program - Interpreter error
-
-```
-int i;
-printInt(i);
-```
-
-```cpp
-INTERPRETER ERROR
-Uninitialized variable i.
+eval.TypeException: post increment written in lama.Absyn.EPostIncr@62 supports only int parameters, but bool was given
 ```
 
 ---
