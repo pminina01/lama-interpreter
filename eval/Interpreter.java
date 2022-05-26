@@ -308,6 +308,9 @@ public class Interpreter {
 					break;
 				}
 			}
+			if (obj==null){
+				throw new RuntimeException("No return statement inside function - " + p.ident_1); 
+			}
 			env.leaveScope();
 			env.setVar(p.ident_1, obj);
 			return obj;
